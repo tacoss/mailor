@@ -1,0 +1,4 @@
+*.log
+.DS_store
+generated
+node_modules
