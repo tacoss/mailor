@@ -1,6 +1,10 @@
 const liveServer = require('live-server');
 const chokidar = require('chokidar');
 
+const {
+  resolve,
+} = require('path');
+
 const compiler = require('../lib/compiler');
 
 module.exports = async (templates, opts) => {
@@ -28,7 +32,7 @@ module.exports = async (templates, opts) => {
 
   ee.on('all', (evt, file) => {
     if (!files.includes(file) && evt === 'add' || evt === 'change') {
-      files.push(file);
+      files.push(resolve(file));
       update();
     }
   });
