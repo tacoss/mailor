@@ -67,5 +67,5 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  console.log(`\rListening at http://localhost:${opts.port || 8080}`); // eslint-disable-line
+  process.stdout.write(`\rListening at http://localhost:${opts.port || 8080}`); // eslint-disable-line
 };

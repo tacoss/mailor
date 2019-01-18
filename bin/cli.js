@@ -73,6 +73,11 @@ async function main() {
   }
 }
 
+process.on('SIGINT', () => process.exit());
+process.on('exit', () => {
+  process.stdout.write('\r\x1b[K');
+});
+
 process.stdout.write(`\rLoading sources...`);
 
 main();
