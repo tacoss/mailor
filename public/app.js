@@ -74,7 +74,7 @@ async function main() {
   }
 
   mount('#list', ['.pad', [
-    ['h3', 'Available templates'],
+    ['h3', 'Available templates:'],
     ['ul', data.map(x => ['li', [
       ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x]
     ]])],

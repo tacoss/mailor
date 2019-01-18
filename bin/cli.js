@@ -56,6 +56,7 @@ async function main() {
           return prev;
         }, []);
 
+        process.stdout.write(`\rProcessing ${templates.length} files:\n`);
         await require(`./${action}`)(templates, options);
         break;
 
