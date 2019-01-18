@@ -3,6 +3,7 @@ const chokidar = require('chokidar');
 
 const {
   resolve,
+  basename,
 } = require('path');
 
 const compiler = require('../lib/compiler');
@@ -42,5 +43,17 @@ module.exports = async (templates, opts) => {
     port: opts.port,
     root: opts.destDir,
     open: opts.open !== false,
+    mount: [
+      ['/', resolve(__dirname, '../public')],
+      ['/vendor', resolve(__dirname, '../node_modules/somedom/dist')],
+    ],
+    middleware: [(req, res, next) => {
+      if (req.url === '/templates.json') {
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify(templates.map(x => basename(x, '.pug'))));
+      } else {
+        next();
+      }
+    }],
   });
 };

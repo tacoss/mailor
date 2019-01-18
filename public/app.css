@@ -1,0 +1,8 @@
+* {
+  outline: 1px dotted red;
+  margin: 0;
+}
+
+.flex {
+  display: flex;
+}
