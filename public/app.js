@@ -23,19 +23,19 @@ async function main() {
       node.classList.remove('active');
     }
 
-    e.target.classList.add('active');
+    if (e) {
+      e.target.classList.add('active');
 
-    return e.target;
+      return e.target;
+    }
   }
 
   function pickMe(node) {
     lastOption = node;
   }
 
-  function showMe(e) {
-    e.preventDefault();
+  function showMe(e, name) {
     lastLink = untoggle(e, lastLink);
-    mainEl.src = e.target.href;
   }
 
   function showData(e) {
@@ -50,14 +50,35 @@ async function main() {
     toggleEl.checked = false;
   }
 
+  // FIXME: how to render mustache?
+  function renderDocument(url) {
+    mainEl.src = `/${location.hash.split('#')[1]}.html`;
+  }
+
   mount('#list', ['ul', data.map(x => ['li', [
-    ['a', { href: `/${x}.html`, onclick: showMe }, x]
+    ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x]
   ]])], $);
 
   mount('#opts', ['ul.flex', [
     ['li', [['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview']]],
     ['li', [['a', { href: '#', onclick: showData }, 'Data']]],
   ]], $);
+
+  if (location.hash) {
+    renderDocument();
+    lastLink = untoggle({
+      target: document.querySelector(`a[href*="#${location.hash.split('#')[1]}"]`),
+    }, lastLink);
+  }
+
+  window.addEventListener('hashchange', e => {
+    if (location.hash) {
+      renderDocument();
+    } else {
+      lastLink = untoggle(null, lastLink);
+      mainEl.src = 'about:blank';
+    }
+  }, false);
 }
 
 main();
