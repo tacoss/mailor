@@ -7,6 +7,10 @@ html, body {
   height: 100%;
 }
 
+textarea {
+  border: 0;
+}
+
 ul {
   list-style: none;
 }
@@ -14,6 +18,10 @@ ul {
 .max {
   width: 100%;
   height: 100%;
+}
+
+.max-w {
+  width: 100%;
 }
 
 .max-h {
@@ -28,15 +36,33 @@ ul {
   flex: 1 1 auto;
 }
 
-#list {
-  min-width: 260px;
+#app {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 260px auto;
+  grid-template-rows: 50px auto;
+  grid-template-areas:
+    'l o'
+    'l m';
 }
 
-#toggle ~ #data { display: none; }
-#toggle ~ #main { display: block; }
+#list {
+  grid-area: l;
+}
 
-#toggle:checked ~ #data { display: block; }
-#toggle:checked ~ #main { display: none; }
+#opts {
+  grid-area: o;
+}
+
+#main {
+  grid-area: m;
+}
+
+#toggle ~ #input { display: none; }
+#toggle ~ #preview { display: block; }
+
+#toggle:checked ~ #input { display: block; }
+#toggle:checked ~ #preview { display: none; }
 
 a.active {
   font-weight: bold;

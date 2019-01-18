@@ -13,7 +13,7 @@ module.exports = async (templates, opts) => {
     try {
       await compiler(srcFiles, opts);
     } catch (e) {
-      console.log('E_FAIL', e);
+      process.stderr.write(`\x1b[31m${e.message}\x1b[0m\n`);
     }
   }
 

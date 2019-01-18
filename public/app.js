@@ -8,7 +8,7 @@ const $ = bind(render,
   }),
   listeners());
 
-const mainEl = document.querySelector('#main');
+const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
 
 async function main() {
