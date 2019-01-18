@@ -17,7 +17,9 @@ module.exports = async (templates, opts) => {
     }
   }
 
-  await run(templates);
+  if (opts.build !== false) {
+    await run(templates);
+  }
 
   const ee = chokidar.watch(templates, {
     cwd: opts.cwd,
@@ -64,4 +66,6 @@ module.exports = async (templates, opts) => {
       }
     }],
   });
+
+  console.log(`\rListening at http://localhost:${opts.port || 8080}`); // eslint-disable-line
 };

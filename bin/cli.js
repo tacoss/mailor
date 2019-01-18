@@ -20,6 +20,7 @@ const options = {
   cwd: process.cwd(),
   port: argv.flags.port,
   open: argv.flags.open,
+  build: argv.flags.build,
   timeout: argv.flags.timeout,
   srcDir: argv._.slice(1).map(x => resolve(x)),
   destDir: resolve(argv.flags.output || './generated'),
@@ -56,7 +57,6 @@ async function main() {
           return prev;
         }, []);
 
-        process.stdout.write(`\rProcessing ${templates.length} files:\n`);
         await require(`./${action}`)(templates, options);
         break;
 
@@ -72,5 +72,7 @@ async function main() {
     process.exit(1);
   }
 }
+
+process.stdout.write(`\rLoading sources...`);
 
 main();
