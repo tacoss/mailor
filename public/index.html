@@ -5,10 +5,17 @@
     <title>DEV</title>
   </head>
   <body>
-    <div class="flex">
+    <div id="app" class="flex">
       <div id="list"></div>
-      <div id="main">
-        <iframe src="about:blank"></iframe>
+      <div class="auto">
+        <div id="opts"></div>
+        <div class="auto">
+          <input id="toggle" type="checkbox" style="display:none">
+          <iframe id="main" src="about:blank" frameborder=0></iframe>
+          <div id="data">
+            <textarea></textarea>
+          </div>
+        </div>
       </div>
     </div>
     <script src="/vendor/somedom.min.js"></script>
