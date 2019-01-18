@@ -8,6 +8,8 @@ const $ = bind(render,
   }),
   listeners());
 
+const modes = [600, 480, 320];
+const title = document.title;
 const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
 
@@ -17,6 +19,7 @@ async function main() {
 
   let lastLink;
   let lastOption;
+  let currentMode;
 
   function untoggle(e, node) {
     if (node) {
@@ -28,6 +31,10 @@ async function main() {
 
       return e.target;
     }
+  }
+
+  function resize() {
+    mainEl.style.width = `${modes[currentMode || 0]}px`;
   }
 
   function pickMe(node) {
@@ -50,18 +57,35 @@ async function main() {
     toggleEl.checked = false;
   }
 
-  // FIXME: how to render mustache?
-  function renderDocument(url) {
-    mainEl.src = `/${location.hash.split('#')[1]}.html`;
+  function setMode(e) {
+    currentMode = modes.findIndex(x => x === parseInt(e.target.value, 10));
+    resize();
   }
 
-  mount('#list', ['ul', data.map(x => ['li', [
-    ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x]
-  ]])], $);
+  // FIXME: how to render mustache?
+  function renderDocument(url) {
+    mainEl.onload = () => {
+      document.title = `${title} (${mainEl.contentDocument.title})`;
+    };
 
-  mount('#opts', ['ul.flex', [
+    mainEl.src = `/${location.hash.split('#')[1]}.html`;
+
+    resize();
+  }
+
+  mount('#list', ['.pad', [
+    ['h3', 'Available templates'],
+    ['ul', data.map(x => ['li', [
+      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x]
+    ]])],
+  ]], $);
+
+  mount('#opts', ['ul.pad.flex', [
     ['li', [['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview']]],
     ['li', [['a', { href: '#', onclick: showData }, 'Data']]],
+    ['li', [
+      ['select', { onchange: setMode }, modes.map(x => ['option', `${x}px`])],
+    ]],
   ]], $);
 
   if (location.hash) {
