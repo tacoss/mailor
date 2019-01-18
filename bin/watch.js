@@ -9,7 +9,15 @@ const {
 const compiler = require('../lib/compiler');
 
 module.exports = async (templates, opts) => {
-  await compiler(templates, opts);
+  async function run(srcFiles) {
+    try {
+      await compiler(srcFiles, opts);
+    } catch (e) {
+      console.log('E_FAIL', e);
+    }
+  }
+
+  await run(templates);
 
   const ee = chokidar.watch(templates, {
     cwd: opts.cwd,
@@ -26,7 +34,7 @@ module.exports = async (templates, opts) => {
   function update() {
     clearTimeout(interval);
     interval = setTimeout(async () => {
-      await compiler(files, opts);
+      await run(files);
       files = [];
     }, opts.timeout || 200);
   }
