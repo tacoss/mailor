@@ -1,5 +1,6 @@
 const liveServer = require('live-server');
 const chokidar = require('chokidar');
+const MailDev = require('maildev');
 
 const {
   resolve,
@@ -67,5 +68,15 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  process.stdout.write(`\rPreview your templates at http://localhost:${opts.port || 8080}\n`); // eslint-disable-line
+  process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${opts.port || 8080}\n`); // eslint-disable-line
+
+  const maildev = new MailDev({
+    disableWeb: process.env.NODE_ENV === 'test',
+    noOpen: true,
+  });
+
+  maildev.listen();
+  maildev.on('new', email => {
+    console.log('>>>', email);
+  });
 };

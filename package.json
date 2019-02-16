@@ -2,7 +2,7 @@
   "name": "mailor",
   "version": "0.0.0",
   "description": "HEML and mails",
-  "main": "index.js",
+  "main": "lib/mailer.js",
   "bin": {
     "mailor": "bin/cli"
   },
