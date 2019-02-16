@@ -30,7 +30,10 @@ const thisPkg = require('../package.json');
 
 const USAGE_INFO = `
 Usage:
-  ${Object.keys(thisPkg.bin)[0]} watch|build [SRC] [DEST]
+  ${Object.keys(thisPkg.bin)[0]} watch|build [...] [-o DEST]
+
+Options:
+  -o, --output  # Destination for generated templates
 
 `;
 
@@ -78,6 +81,8 @@ process.on('exit', () => {
   process.stdout.write('\r\x1b[K');
 });
 
-process.stdout.write(`\rLoading sources...`);
+process.nextTick(() => {
+  process.stdout.write(`\rLoading sources...`);
+});
 
 main();

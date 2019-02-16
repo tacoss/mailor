@@ -1,17 +1,20 @@
 {
-  "name": "hypemail",
+  "name": "mailor",
   "version": "0.0.0",
-  "description": "",
+  "description": "HEML and mails",
   "main": "index.js",
   "bin": {
-    "hypemail": "bin/cli"
+    "mailor": "bin/cli"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Agave Lab <oss@agavelab.com> (https://agavelab.com/)",
+  "maintainers": [
+    "Alvaro Cabrera <pateketrueke@gmail.com> (https://soypache.co)"
+  ],
+  "license": "MIT",
   "dependencies": {
     "chokidar": "^2.0.4",
     "fs-extra": "^7.0.1",
