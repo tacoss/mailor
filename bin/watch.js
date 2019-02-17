@@ -77,6 +77,6 @@ module.exports = async (templates, opts) => {
 
   maildev.listen();
   maildev.on('new', email => {
-    console.log('>>>', email);
+    process.stdout.write(`\r---> MAIL: "${email.subject}" ${email.envelope.from.address || 'N/A'} -> ${email.to[0].address} ${email.date}\n`);
   });
 };
