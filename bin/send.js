@@ -1,8 +1,8 @@
-process.env.MAILDEV = 1;
-
 const Mailer = require('../lib/mailer');
 
-const mailer = Mailer.getMailer();
+const mailer = Mailer.getMailer({
+  maildev: process.env.MAILDEV === 'YES',
+});
 
 module.exports = (templates, { subject, address, locals }) => {
   if (!templates.length) {
