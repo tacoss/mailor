@@ -3,6 +3,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     p: 'port',
     o: 'output',
     t: 'timeout',
+    s: 'subject',
   },
 });
 
@@ -22,18 +23,28 @@ const options = {
   open: argv.flags.open,
   build: argv.flags.build,
   timeout: argv.flags.timeout,
+  subject: argv.flags.subject,
+  address: argv.flags.address,
   srcDir: argv._.slice(1).map(x => resolve(x)),
   destDir: resolve(argv.flags.output || './generated'),
 };
 
 const thisPkg = require('../package.json');
+const thisBin = Object.keys(thisPkg.bin)[0];
 
 const USAGE_INFO = `
 Usage:
-  ${Object.keys(thisPkg.bin)[0]} watch|build [...] [-o DEST]
+  ${thisBin} watch|build [...]
+  ${thisBin} send [...]
 
 Options:
-  -o, --output  # Destination for generated templates
+  -p, --port     # Custom port for preview page
+  -o, --open     # Often open or --no-open the browser
+  -t, --timeout  # Destination for generated templates
+  -s, --subject  # Subject for the message sent
+  -a, --address  # Used address for sending emails
+
+When using the send command you MUST have already started in watch mode
 
 `;
 
@@ -42,6 +53,10 @@ async function main() {
     switch (action) {
       case 'build':
       case 'watch':
+        process.nextTick(() => {
+          process.stdout.write(`\rLoading sources...`);
+        });
+
         const templates = options.srcDir.reduce((prev, cur) => {
           const isFile = existsSync(cur) && statSync(cur).isFile();
 
@@ -63,6 +78,10 @@ async function main() {
         await require(`./${action}`)(templates, options);
         break;
 
+      case 'send':
+        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) && x.includes('.html')), { ...options, locals: argv.data });
+        break;
+
       case 'help':
         process.stdout.write(USAGE_INFO);
         break;
@@ -79,10 +98,6 @@ async function main() {
 process.on('SIGINT', () => process.exit());
 process.on('exit', () => {
   process.stdout.write('\r\x1b[K');
-});
-
-process.nextTick(() => {
-  process.stdout.write(`\rLoading sources...`);
 });
 
 main();
