@@ -3,7 +3,6 @@ const argv = require('wargs')(process.argv.slice(2), {
     p: 'port',
     O: 'open',
     o: 'output',
-    m: 'maildev',
     t: 'timeout',
     s: 'subject',
     a: 'address',
@@ -24,7 +23,6 @@ const options = {
   cwd: process.cwd(),
   port: argv.flags.port,
   open: argv.flags.open,
-  maildev: argv.flags.maildev,
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,
@@ -46,7 +44,6 @@ Options:
   -t, --timeout  # Destination for generated templates
   -s, --subject  # Subject for the message sent
   -a, --address  # Used address for sending e-mails
-  -m, --maildev  # Enable MAILDEV for sending e-mails
 
 When using the send command you MUST have already started in watch mode
 

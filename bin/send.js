@@ -1,9 +1,5 @@
 const Mailer = require('../lib/mailer');
 
-const mailer = Mailer.getMailer({
-  maildev: process.env.MAILDEV === 'YES',
-});
-
 module.exports = (templates, { subject, address, locals }) => {
   if (!templates.length) {
     throw new Error('Missing templates to send');
@@ -11,6 +7,10 @@ module.exports = (templates, { subject, address, locals }) => {
 
   process.nextTick(() => {
     process.stdout.write(`\rSending ${templates.length} e-mail${templates.length === 1 ? '' : 's'}...`);
+  });
+
+  const mailer = Mailer.getMailer({
+    maildev: true,
   });
 
   return Promise.all(templates.map(tpl => mailer.sendMail({
