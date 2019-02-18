@@ -1,6 +1,15 @@
 # Mailor
 
-This module glues Maildev and HEML with some Pug and Mustache to enable an easier development workflow for mailings on NodeJS.
+> This module glues Maildev and HEML with some Pug and Mustache to enable an easier development workflow for mailings on NodeJS.
+
+<div align="center">
+
+[![Build Status](https://api.travis-ci.org/agave/mailor.svg?branch=master)](https://travis-ci.org/agave/mailor)
+[![NPM version](https://badge.fury.io/js/mailor.svg)](http://badge.fury.io/js/mailor)
+[![Coverage Status](https://codecov.io/github/agave/mailor/coverage.svg?branch=master)](https://codecov.io/github/agave/mailor)
+[![Known Vulnerabilities](https://snyk.io/test/npm/mailor/badge.svg)](https://snyk.io/test/npm/mailor)
+
+</div>
 
 Get it globally or within your project:
 
