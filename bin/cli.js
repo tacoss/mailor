@@ -75,7 +75,7 @@ async function main() {
           return prev;
         }, []);
 
-        await require(`./${action}`)(templates, options);
+        await require(`./${action}`)(templates, { ...options, locals: argv.data });
         break;
 
       case 'send':
