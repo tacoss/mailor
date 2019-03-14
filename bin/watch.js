@@ -68,7 +68,7 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${opts.port || 8080}\n`); // eslint-disable-line
+  process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${opts.port || 1081}\n`); // eslint-disable-line
 
   const maildev = new MailDev({
     disableWeb: process.env.NODE_ENV === 'test',
