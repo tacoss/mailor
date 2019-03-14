@@ -1,18 +1,12 @@
-const liveServer = require('live-server');
-const chokidar = require('chokidar');
-const MailDev = require('maildev');
-
 const {
   resolve,
   basename,
 } = require('path');
 
-const compiler = require('../lib/compiler');
-
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
     try {
-      await compiler(srcFiles, opts);
+      await require('../lib/compiler')(srcFiles, opts);
     } catch (e) {
       process.stderr.write(`\x1b[31m${e.message}\x1b[0m\n`);
     }
@@ -22,7 +16,7 @@ module.exports = async (templates, opts) => {
     await run(templates);
   }
 
-  const ee = chokidar.watch(templates, {
+  const ee = require('chokidar').watch(templates, {
     cwd: opts.cwd,
     ignored: [],
     persistent: true,
@@ -49,6 +43,8 @@ module.exports = async (templates, opts) => {
     }
   });
 
+  const liveServer = require('live-server');
+
   const devPort = opts.port || 1081;
 
   liveServer.start({
@@ -70,7 +66,14 @@ module.exports = async (templates, opts) => {
     }],
   });
 
+  process.on('exit', () => {
+    ee.close();
+    liveServer.shutdown();
+  });
+
   process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
+
+  const MailDev = require('maildev');
 
   const maildev = new MailDev({
     disableWeb: process.env.NODE_ENV === 'test',
