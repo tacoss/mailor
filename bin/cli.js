@@ -6,6 +6,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     t: 'timeout',
     s: 'subject',
     a: 'address',
+    f: 'filename',
   },
 });
 
@@ -26,6 +27,7 @@ const options = {
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,
+  filename: argv.flags.filename,
   srcDir: argv._.slice(1).map(x => resolve(x)),
   destDir: resolve(argv.flags.output || './generated'),
 };
@@ -39,11 +41,12 @@ Usage:
   ${thisBin} send [...]
 
 Options:
-  -p, --port     # Custom port for preview page
-  -o, --open     # Often open or --no-open the browser
-  -t, --timeout  # Destination for generated templates
-  -s, --subject  # Subject for the message sent
-  -a, --address  # Used address for sending e-mails
+  -p, --port      # Custom port for preview page
+  -o, --open      # Often open or --no-open the browser
+  -t, --timeout   # Destination for generated templates
+  -s, --subject   # Subject for the message sent
+  -a, --address   # Used address for sending e-mails
+  -f, --filename  # Used when sending emails from a directory
 
 When using the send command you MUST have already started in watch mode
 
@@ -80,7 +83,7 @@ async function main() {
         break;
 
       case 'send':
-        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) && x.includes('.html')), { ...options, locals: argv.data });
+        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes('.html')), { ...options, locals: argv.data });
         break;
 
       case 'help':
