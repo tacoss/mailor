@@ -66,22 +66,13 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  process.on('exit', () => {
-    ee.close();
-    liveServer.shutdown();
-  });
-
   process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
 
-  const MailDev = require('maildev');
+  const maildev = require('../lib/maildev');
 
-  const maildev = new MailDev({
-    disableWeb: process.env.NODE_ENV === 'test',
-    noOpen: true,
-  });
-
-  maildev.listen();
-  maildev.on('new', email => {
-    process.stdout.write(`\r---> MAIL: "${email.subject}" ${email.envelope.from.address || 'N/A'} -> ${email.to[0].address} ${email.date}\n`);
+  process.on('exit', () => {
+    ee.close();
+    maildev.close();
+    liveServer.shutdown();
   });
 };
