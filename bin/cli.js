@@ -1,8 +1,8 @@
 const argv = require('wargs')(process.argv.slice(2), {
   alias: {
     p: 'port',
-    O: 'open',
-    o: 'output',
+    o: 'open',
+    d: 'dest',
     t: 'timeout',
     s: 'subject',
     a: 'address',
@@ -29,7 +29,7 @@ const options = {
   address: argv.flags.address,
   filename: argv.flags.filename,
   srcDir: argv._.slice(1).map(x => resolve(x)),
-  destDir: resolve(argv.flags.output || './generated'),
+  destDir: resolve(argv.flags.dest || './generated'),
 };
 
 const thisPkg = require('../package.json');
@@ -43,6 +43,7 @@ Usage:
 Options:
   -p, --port      # Custom port for preview page
   -o, --open      # Often open or --no-open the browser
+  -d, --dest      # Output destination for generated files
   -t, --timeout   # Destination for generated templates
   -s, --subject   # Subject for the message sent
   -a, --address   # Used address for sending e-mails
@@ -58,7 +59,7 @@ async function main() {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write(`\rLoading sources...`);
+          process.stdout.write(`\rLoading sources... `);
         });
 
         const templates = options.srcDir.reduce((prev, cur) => {
