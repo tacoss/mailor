@@ -66,9 +66,11 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
-
   const maildev = require('../lib/maildev');
+
+  process.nextTick(() => {
+    process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
+  });
 
   process.on('exit', () => {
     ee.close();
