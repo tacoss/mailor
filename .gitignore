@@ -1,4 +1,5 @@
 *.log
 .DS_store
+dist
 generated
 node_modules

@@ -7,13 +7,22 @@
     "mailor": "bin/cli"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "mkdir -p dist && cp node_modules/somedom/dist/somedom.umd.js dist/"
   },
-  "keywords": [],
-  "author": "Agave Lab <oss@agavelab.com> (https://agavelab.com/)",
-  "maintainers": [
-    "Alvaro Cabrera <pateketrueke@gmail.com> (https://soypache.co)"
+  "files": [
+    "bin/*",
+    "lib/*.js",
+    "dist/*.js",
+    "public/*.js"
   ],
+  "keywords": [
+    "nodemailer",
+    "templates",
+    "preview",
+    "maildev",
+    "mailer"
+  ],
+  "author": "Alvaro Cabrera <pateketrueke@gmail.com> (https://soypache.co)",
   "license": "MIT",
   "dependencies": {
     "chokidar": "^3.0.0",

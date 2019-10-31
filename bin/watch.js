@@ -54,7 +54,7 @@ module.exports = async (templates, opts) => {
     open: opts.open !== false,
     mount: [
       ['/', resolve(__dirname, '../public')],
-      ['/vendor', resolve(require.resolve('somedom'), '..')],
+      ['/vendor', resolve(__dirname, '../dist')],
     ],
     middleware: [(req, res, next) => {
       if (req.url === '/templates.json') {
