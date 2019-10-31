@@ -1,3 +1,4 @@
+/* global somedom */
 const {
   bind, mount, render, listeners, attributes, classes,
 } = somedom;
@@ -42,6 +43,7 @@ async function main() {
   }
 
   function showMe(e, name) {
+    console.log('FIXME', name); // eslint-disable-line
     lastLink = untoggle(e, lastLink);
   }
 
@@ -62,8 +64,8 @@ async function main() {
     resize();
   }
 
-  // FIXME: how to render mustache?
-  function renderDocument(url) {
+  // FIXME: how to render mustache on-the-fly?
+  function renderDocument() {
     mainEl.onload = () => {
       document.title = `${title} (${mainEl.contentDocument.title})`;
     };
@@ -76,7 +78,7 @@ async function main() {
   mount('#list', ['.pad', [
     ['h3', 'Available templates:'],
     ['ul', data.map(x => ['li', [
-      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x]
+      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x],
     ]])],
   ]], $);
 
@@ -95,7 +97,7 @@ async function main() {
     }, lastLink);
   }
 
-  window.addEventListener('hashchange', e => {
+  window.addEventListener('hashchange', () => {
     if (location.hash) {
       renderDocument();
     } else {

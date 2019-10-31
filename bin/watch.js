@@ -1,7 +1,4 @@
-const {
-  resolve,
-  basename,
-} = require('path');
+const { resolve, basename } = require('path');
 
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
@@ -37,7 +34,7 @@ module.exports = async (templates, opts) => {
   }
 
   ee.on('all', (evt, file) => {
-    if (!files.includes(file) && evt === 'add' || evt === 'change') {
+    if ((!files.includes(file) && evt === 'add') || evt === 'change') {
       files.push(resolve(file));
       update();
     }

@@ -33,6 +33,7 @@ const options = {
 };
 
 const thisPkg = require('../package.json');
+
 const thisBin = Object.keys(thisPkg.bin)[0];
 
 const USAGE_INFO = `
@@ -53,34 +54,36 @@ When using the send command you MUST have already started in watch mode
 
 `;
 
+function getTemplates() {
+  return options.srcDir.reduce((prev, cur) => {
+    const isFile = existsSync(cur) && statSync(cur).isFile();
+
+    const sources = isFile ? [cur] : readdirSync(cur)
+      .map(x => join(cur, x))
+      .filter(x => {
+        if (statSync(x).isFile() && x.indexOf('.pug') !== -1) {
+          return true;
+        }
+
+        return false;
+      });
+
+    prev.push(...sources);
+
+    return prev;
+  }, []);
+}
+
 async function main() {
   try {
     switch (action) {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write(`\rLoading templates...`);
+          process.stdout.write('\rLoading templates...');
         });
 
-        const templates = options.srcDir.reduce((prev, cur) => {
-          const isFile = existsSync(cur) && statSync(cur).isFile();
-
-          const sources = isFile ? [cur] : readdirSync(cur)
-            .map(x => join(cur, x))
-            .filter(x => {
-              if (statSync(x).isFile() && x.indexOf('.pug') !== -1) {
-                return true;
-              }
-
-              return false;
-            });
-
-          prev.push(...sources);
-
-          return prev;
-        }, []);
-
-        await require(`./${action}`)(templates, { ...options, locals: argv.data });
+        await require(`./${action}`)(getTemplates(), { ...options, locals: argv.data });
         break;
 
       case 'send':

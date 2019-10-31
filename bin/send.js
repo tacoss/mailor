@@ -2,7 +2,9 @@ const { join } = require('path');
 
 const Mailer = require('../lib/mailer');
 
-module.exports = (templates, { filename, subject, address, locals }) => {
+module.exports = (templates, {
+  filename, subject, address, locals,
+}) => {
   if (!templates.length) {
     throw new Error('Missing templates to send');
   }

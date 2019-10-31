@@ -8,6 +8,8 @@
   },
   "scripts": {
     "build": "mkdir -p dist && cp node_modules/somedom/dist/somedom.umd.js dist/",
+    "lint": "eslint bin lib public",
+    "pretest": "npm run lint",
     "test": "echo 'Pending...' && exit 1"
   },
   "files": [
@@ -37,6 +39,9 @@
     "wargs": "^0.8.2"
   },
   "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.0",
     "somedom": "^0.1.1",
     "open": ">=6.0.0",
     "axios": ">=0.18.1"
