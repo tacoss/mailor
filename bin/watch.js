@@ -88,6 +88,8 @@ module.exports = async (templates, opts) => {
 
   const maildev = require('../lib/maildev');
 
+  maildev.listen();
+
   process.on('exit', () => {
     ee.close();
     maildev.close();

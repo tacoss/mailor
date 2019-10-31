@@ -83,7 +83,7 @@ async function main() {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write('\rLoading templates...');
+          process.stdout.write('\rLoading templates...\r');
         });
 
         await require(`./${action}`)(getTemplates(), { ...options, locals: argv.data });
