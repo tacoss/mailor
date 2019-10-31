@@ -59,7 +59,7 @@ async function main() {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write(`\rLoading sources... `);
+          process.stdout.write(`\rLoading templates...`);
         });
 
         const templates = options.srcDir.reduce((prev, cur) => {
