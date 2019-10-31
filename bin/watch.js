@@ -1,4 +1,5 @@
-const { resolve, basename } = require('path');
+const { join, resolve, basename } = require('path');
+const { readFileSync } = require('fs');
 
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
@@ -47,13 +48,33 @@ module.exports = async (templates, opts) => {
   liveServer.start({
     logLevel: 0,
     port: devPort,
-    root: opts.destDir,
     open: opts.open !== false,
+    ignore: 'generated_templates',
+    root: resolve(__dirname, '../public'),
     mount: [
-      ['/', resolve(__dirname, '../public')],
       ['/vendor', resolve(__dirname, '../dist')],
     ],
     middleware: [(req, res, next) => {
+      if (req.url.indexOf('/generated_templates/') === 0) {
+        const [base, query] = req.url.substr(21).split('?');
+
+        let html = readFileSync(join(opts.destDir, base)).toString();
+        let data = {};
+
+        try {
+          data = JSON.parse(decodeURIComponent(query));
+        } catch (e) {
+          // ignore
+        }
+
+        html = html.replace(/\{\{(.+?)\}\}/g, (_, key) => {
+          return data[key] || `[[ MISSING: ${key} ]]`;
+        });
+
+        res.end(html);
+        return;
+      }
+
       if (req.url === '/templates.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(templates.map(x => basename(x, '.pug'))));
@@ -63,11 +84,9 @@ module.exports = async (templates, opts) => {
     }],
   });
 
-  const maildev = require('../lib/maildev');
+  process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
 
-  process.nextTick(() => {
-    process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
-  });
+  const maildev = require('../lib/maildev');
 
   process.on('exit', () => {
     ee.close();

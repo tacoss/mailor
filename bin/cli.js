@@ -7,6 +7,8 @@ const argv = require('wargs')(process.argv.slice(2), {
     s: 'subject',
     a: 'address',
     f: 'filename',
+    O: 'no-open',
+    B: 'no-build',
   },
 });
 
@@ -24,6 +26,7 @@ const options = {
   cwd: process.cwd(),
   port: argv.flags.port,
   open: argv.flags.open,
+  build: argv.flags.build,
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,

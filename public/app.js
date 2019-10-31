@@ -70,7 +70,12 @@ async function main() {
       document.title = `${title} (${mainEl.contentDocument.title})`;
     };
 
-    mainEl.src = `/${location.hash.split('#')[1]}.html`;
+    // FIXME: how to pass more values...
+    const data = encodeURIComponent(JSON.stringify({
+      name: 'OSOMS',
+    }));
+
+    mainEl.src = `/generated_templates/${location.hash.split('#')[1]}.html?${data}`;
 
     resize();
   }
