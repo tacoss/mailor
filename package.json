@@ -57,6 +57,7 @@
     "open": ">=6.0.0",
     "somedom": "^0.1.1",
     "std-mocks": "^1.0.1",
+    "tempfile": "^3.0.0",
     "testdouble": "^3.12.4"
   }
 }

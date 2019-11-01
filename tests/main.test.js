@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const fs = require('fs-extra');
 const path = require('path');
+const tempfile = require('tempfile');
 const td = require('testdouble');
 const stdMocks = require('std-mocks');
 const stdinMock = require('mock-stdin');
@@ -224,7 +225,7 @@ describe('integration', () => {
       const input = stdinMock.stdin();
 
       stdMocks.use();
-      require('../lib/worker');
+      require('../lib/worker')();
       input.send('OSOMS');
       input.send(null);
 
@@ -245,10 +246,12 @@ describe('integration', () => {
       stdMocks.use();
 
       const input = stdinMock.stdin();
+      const tmp = tempfile();
 
-      process.argv[2] = '/tmp/x';
+      process.argv[2] = path.join(__dirname, 'fixtures/template.html');
+      process.argv[3] = tmp;
 
-      require('../lib/worker');
+      require('../lib/worker')();
       input.send('OSOMS');
       input.send(null);
 
@@ -260,7 +263,7 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(fs.readFileSync('/tmp/x').toString()).to.eql('OSOMS');
+          expect(fs.readFileSync(tmp).toString()).to.eql('OSOMS');
           expect(stdout).to.eql([]);
         }, 500);
       });
