@@ -1,5 +1,5 @@
 const { join, resolve, basename } = require('path');
-const { readFileSync } = require('fs');
+const Mailer = require('../lib/mailer');
 
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
@@ -58,7 +58,6 @@ module.exports = async (templates, opts) => {
       if (req.url.indexOf('/generated_templates/') === 0) {
         const [base, query] = req.url.substr(21).split('?');
 
-        let html = readFileSync(join(opts.destDir, base)).toString();
         let data = {};
 
         try {
@@ -67,11 +66,7 @@ module.exports = async (templates, opts) => {
           // ignore
         }
 
-        html = html.replace(/\{\{(.+?)\}\}/g, (_, key) => {
-          return data[key] || `[[ MISSING: ${key} ]]`;
-        });
-
-        res.end(html);
+        res.end(Mailer.render(join(opts.destDir, base), data));
         return;
       }
 
