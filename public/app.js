@@ -71,11 +71,11 @@ async function main() {
     };
 
     // FIXME: how to pass more values...
-    const data = encodeURIComponent(JSON.stringify({
+    const input = encodeURIComponent(JSON.stringify({
       name: 'OSOMS',
     }));
 
-    mainEl.src = `/generated_templates/${location.hash.split('#')[1]}.html?${data}`;
+    mainEl.src = `/generated_templates/${location.hash.split('#')[1]}.html?${input}`;
 
     resize();
   }
