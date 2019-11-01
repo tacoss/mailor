@@ -12,10 +12,11 @@
     "pretest": "npm run lint",
     "mocha": "NODE_ENV=test _mocha --timeout 5000 --exit --recursive -bR spec",
     "test": "npm run test:unit --",
-    "test:ci": "npm run coverage && npm run report --",
+    "test:ci": "npm run coverage && npm run report -- -r lcov",
     "test:unit": "npm run mocha -- 'tests/*.test.js'",
     "test:coverage": "npm run coverage && npm run report",
     "coverage": "nyc --silent -x '**/tests/**' -x '**/*.test.js' -- npm run test:unit",
+    "codecov": "codecov --file=coverage/lcov.info -e TRAVIS_NODE_VERSION",
     "report": "nyc report"
   },
   "files": [
