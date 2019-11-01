@@ -15,7 +15,7 @@
     "test:ci": "npm run coverage && npm run report --",
     "test:unit": "npm run mocha -- 'tests/*.test.js'",
     "test:coverage": "npm run coverage && npm run report",
-    "coverage": "nyc -x '**/tests/**' -x '**/*.test.js' -- npm run test:unit",
+    "coverage": "nyc --silent -x '**/tests/**' -x '**/*.test.js' -- npm run test:unit",
     "report": "nyc report"
   },
   "files": [
