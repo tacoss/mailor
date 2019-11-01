@@ -160,10 +160,7 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(stdout).to.eql([
-            '\r\u001b[31mTypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string.'
-            + ' Received type undefined\n  in undefined\u001b[0m\n',
-          ]);
+          expect(stdout[0]).to.contains('TypeError');
         }, 500);
       });
     });
