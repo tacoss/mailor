@@ -1,5 +1,7 @@
 *.log
 .DS_store
 dist
+.nyc_output
+coverage
 generated
 node_modules
