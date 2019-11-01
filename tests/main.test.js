@@ -30,7 +30,7 @@ describe('Mailor', () => {
     expect(new Mailor({ transport: true }).transporter).to.eql(true);
   });
 
-  it('should validate input', async () => {
+  it('should validate input', () => {
     expect(() => Mailor.buildMailer(undefined, { transport: true })).to.throw(/Invalid directory/);
     expect(typeof Mailor.buildMailer(path.join(__dirname, 'fixtures'), { transport: true }).template).to.eql('function');
   });
@@ -69,6 +69,7 @@ describe('Mailor', () => {
       setTimeout(() => {
         maildev.close();
         stdMocks.restore();
+        ok();
 
         const { stdout } = stdMocks.flush();
 
@@ -78,8 +79,7 @@ describe('Mailor', () => {
         expect(emails[0].subject).to.eql('template');
         expect(emails[0].to).to.eql([{ address: 'user@email.com', name: '' }]);
         // FIXME: it should have return value?
-        // console.log({ result });
-        ok();
+        console.log({ result });
       }, 50);
     });
   });
@@ -121,14 +121,13 @@ describe('integration', () => {
         setTimeout(() => {
           maildev.close();
           stdMocks.restore();
+          ok();
 
           const { stdout } = stdMocks.flush();
 
           expect(stdout).to.eql([
             'MailDev SMTP Server running at 0.0.0.0:1025\n',
           ]);
-
-          ok();
         }, 1000);
       });
     });
@@ -146,17 +145,18 @@ describe('integration', () => {
     });
 
     it('should validate input', async () => {
-      stdMocks.use();
-
       const input = stdinMock.stdin();
 
+      stdMocks.use();
       require('../lib/worker');
       input.send('OSOMS');
       input.send(null);
 
       await new Promise(ok => {
         setTimeout(() => {
+          input.end();
           stdMocks.restore();
+          ok();
 
           const { stdout } = stdMocks.flush();
 
@@ -164,9 +164,7 @@ describe('integration', () => {
             '\r\u001b[31mTypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string.'
             + ' Received type undefined\n  in undefined\u001b[0m\n',
           ]);
-          input.end();
-          ok();
-        }, 100);
+        }, 500);
       });
     });
 
@@ -183,15 +181,15 @@ describe('integration', () => {
 
       await new Promise(ok => {
         setTimeout(() => {
+          input.end();
           stdMocks.restore();
+          ok();
 
           const { stdout } = stdMocks.flush();
 
           expect(fs.readFileSync('/tmp/x').toString()).to.eql('OSOMS');
           expect(stdout).to.eql([]);
-          input.end();
-          ok();
-        }, 100);
+        }, 500);
       });
     });
   });
