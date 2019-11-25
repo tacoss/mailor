@@ -9,6 +9,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     f: 'filename',
     O: 'no-open',
     B: 'no-build',
+    S: 'no-server',
   },
 });
 
@@ -27,6 +28,7 @@ const options = {
   port: argv.flags.port,
   open: argv.flags.open,
   build: argv.flags.build,
+  server: argv.flags.server,
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,
@@ -53,7 +55,8 @@ Options:
   -a, --address   # Used address for sending e-mails
   -f, --filename  # Used when sending emails from a directory
 
-When using the send command you MUST have already started in watch mode
+When using the send command you MUST have already started in watch mode, to disable
+the maildev server (if already running) just add --no-server in your options
 
 `;
 
