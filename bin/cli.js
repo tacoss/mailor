@@ -104,7 +104,7 @@ async function main() {
         throw new Error(`Unknown ${action} action`);
     }
   } catch (e) {
-    process.stderr.write(`\x1b[31m${e.message}\x1b[0m\n`);
+    process.stderr.write(`\x1b[31m${e.stack}\x1b[0m\n`);
     process.exit(1);
   }
 }

@@ -1,4 +1,6 @@
-const { join, resolve, basename } = require('path');
+const nsfw = require('nsfw');
+const { statSync, existsSync } = require('fs');
+const { join, resolve, relative, basename } = require('path');
 const Mailer = require('../lib/mailer');
 
 module.exports = async (templates, opts) => {
@@ -14,14 +16,32 @@ module.exports = async (templates, opts) => {
     await run(templates);
   }
 
-  const ee = require('chokidar').watch(templates, {
-    cwd: opts.cwd,
-    ignored: [],
-    persistent: true,
-    ignoreInitial: true,
-    ignorePermissionErrors: true,
-    followSymlinks: false,
-  });
+  const watchers = await Promise.all(opts.srcDir.map(baseDir => {
+    return nsfw(baseDir, evts => {
+      evts.forEach(evt => {
+        const fullpath = join(evt.newDirectory || evt.directory, evt.newFile || evt.file);
+
+        if (existsSync(fullpath) && statSync(fullpath).isFile()) {
+          let type = (evt.action === 1 || evt.action === 2)
+            ? 'changed'
+            : null;
+
+          type = type || (evt.action === 0 ? 'add' : null);
+          type = type || (evt.action === 3 ? 'unlink' : null);
+
+          const file = relative(opts.cwd, fullpath);
+
+          if ((!files.includes(file) && type === 'add') || type === 'changed') {
+            files.push(fullpath);
+            update();
+          }
+        }
+      });
+    }).then(watcher => {
+      watcher.start();
+      return watcher;
+    });
+  }));
 
   let files = [];
   let interval;
@@ -33,13 +53,6 @@ module.exports = async (templates, opts) => {
       files = [];
     }, opts.timeout || 200);
   }
-
-  ee.on('all', (evt, file) => {
-    if ((!files.includes(file) && evt === 'add') || evt === 'change') {
-      files.push(resolve(file));
-      update();
-    }
-  });
 
   const liveServer = require('live-server');
 
@@ -89,7 +102,10 @@ module.exports = async (templates, opts) => {
   }
 
   process.on('exit', () => {
-    ee.close();
+    watchers.forEach(watcher => {
+      watcher.stop();
+    });
+
     liveServer.shutdown();
 
     if (maildev) {
