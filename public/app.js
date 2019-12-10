@@ -88,7 +88,7 @@ async function main() {
           onclick() {
             item.ref.value = '';
             setValue(item.key, '');
-          }
+          },
         }, '×'],
       ]],
     ]])],

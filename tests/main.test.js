@@ -159,6 +159,8 @@ describe('Mailor', () => {
         expect(result.accepted).to.eql(['user@email.com']);
       }, 500);
     });
+
+    expect(typeof mailer.justAnExample).to.eql('function');
   });
 });
 
