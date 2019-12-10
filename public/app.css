@@ -161,3 +161,8 @@ ul {
 #input textarea {
   width: 100%;
 }
+
+#input button {
+  margin-left: .5em;
+  border: 0;
+}

@@ -40,7 +40,7 @@ async function main() {
     };
 
     const locals = curVars.reduce((prev, cur) => {
-      prev[cur.key] = cur.value || `[[${cur.key.replace(/[a-z](?=[A-Z])/, '$&_').toUpperCase()}]]`;
+      prev[cur.key] = cur.value || cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase();
       return prev;
     }, {});
 
@@ -49,6 +49,15 @@ async function main() {
     mainEl.src = `/generated_templates/${location.hash.split('#')[1]}.html?${q}`;
 
     resize();
+  }
+
+  function setValue(key, value) {
+    curVars.forEach(sub => {
+      if (sub.key === key) {
+        sub.value = value;
+        renderDocument();
+      }
+    });
   }
 
   const $actions = {
@@ -68,15 +77,19 @@ async function main() {
         ['textarea', {
           name: item.key,
           rows: 2,
+          oncreate(e) {
+            item.ref = e;
+          },
           onchange(e) {
-            curVars.forEach(sub => {
-              if (sub.key === item.key) {
-                sub.value = e.target.value;
-                renderDocument();
-              }
-            });
+            setValue(item.key, e.target.value);
           },
         }],
+        ['button', {
+          onclick() {
+            item.ref.value = '';
+            setValue(item.key, '');
+          }
+        }, '×'],
       ]],
     ]])],
   ]];
