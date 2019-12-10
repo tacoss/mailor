@@ -23,7 +23,7 @@
     "bin/*",
     "lib/*.js",
     "dist/*.js",
-    "public/*.js"
+    "public/*.*"
   ],
   "keywords": [
     "nodemailer",
