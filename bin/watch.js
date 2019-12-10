@@ -1,6 +1,10 @@
 const nsfw = require('nsfw');
 const { statSync, existsSync } = require('fs');
-const { join, resolve, relative, basename } = require('path');
+
+const {
+  join, resolve, relative, basename,
+} = require('path');
+
 const Mailer = require('../lib/mailer');
 
 module.exports = async (templates, opts) => {
@@ -14,6 +18,17 @@ module.exports = async (templates, opts) => {
 
   if (opts.build !== false) {
     await run(templates);
+  }
+
+  let files = [];
+  let interval;
+
+  function update() {
+    clearTimeout(interval);
+    interval = setTimeout(async () => {
+      await run(files);
+      files = [];
+    }, opts.timeout || 200);
   }
 
   const watchers = await Promise.all(opts.srcDir.map(baseDir => {
@@ -42,17 +57,6 @@ module.exports = async (templates, opts) => {
       return watcher;
     });
   }));
-
-  let files = [];
-  let interval;
-
-  function update() {
-    clearTimeout(interval);
-    interval = setTimeout(async () => {
-      await run(files);
-      files = [];
-    }, opts.timeout || 200);
-  }
 
   const liveServer = require('live-server');
 
