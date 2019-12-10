@@ -35,8 +35,10 @@ async function main() {
   }
 
   function renderDocument() {
+    const id = location.hash.split('#')[1];
+
     mainEl.onload = () => {
-      document.title = `${title} (${mainEl.contentDocument.title})`;
+      document.title = `${title} (${id} - ${mainEl.contentDocument.title})`;
     };
 
     const locals = curVars.reduce((prev, cur) => {
@@ -46,7 +48,7 @@ async function main() {
 
     const q = encodeURIComponent(JSON.stringify(locals));
 
-    mainEl.src = `/generated_templates/${location.hash.split('#')[1]}.html?${q}`;
+    mainEl.src = `/generated_templates/${id}.html?${q}`;
 
     resize();
   }
