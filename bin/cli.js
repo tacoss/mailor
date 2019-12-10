@@ -47,16 +47,18 @@ Usage:
   ${thisBin} send [...]
 
 Options:
-  -p, --port      # Custom port for preview page
-  -o, --open      # Often open or --no-open the browser
-  -d, --dest      # Output destination for generated files
-  -t, --timeout   # Destination for generated templates
-  -s, --subject   # Subject for the message sent
-  -a, --address   # Used address for sending e-mails
-  -f, --filename  # Used when sending emails from a directory
+  -p, --port       # Custom port for preview page
+  -o, --open       # Often open or --no-open (-O) the browser
+  -d, --dest       # Output destination for generated files
+  -t, --timeout    # Destination for generated templates
+  -s, --subject    # Subject for the message sent
+  -a, --address    # Used address for sending e-mails
+  -f, --filename   # Used when sending emails from a directory
 
 When using the send command you MUST have already started in watch mode, to disable
-the maildev server (if already running) just add --no-server in your options
+the maildev server (if already running) just add --no-server (-S) in your options
+
+Try adding --no-build (-B) for faster startups during development
 
 `;
 
