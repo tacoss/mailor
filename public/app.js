@@ -52,8 +52,8 @@ async function main() {
   }
 
   const $actions = {
-    update: value => state => ({
-      items: value,
+    update: value => () => ({
+      items: value.slice(),
     }),
   };
 
@@ -61,18 +61,22 @@ async function main() {
     items: [],
   };
 
-  const $view = (state, actions) => ['div', [
+  const $view = state => ['div', [
     ['ul', state.items.map(item => ['li', [
       ['label', [
         ['span', item.key],
-        ['textarea', { name: item.key, rows: 2, onchange(e) {
-          curVars.forEach(sub => {
-            if (sub.key === item.key) {
-              sub.value = e.target.value;
-              renderDocument()
-            }
-          });
-        } }],
+        ['textarea', {
+          name: item.key,
+          rows: 2,
+          onchange(e) {
+            curVars.forEach(sub => {
+              if (sub.key === item.key) {
+                sub.value = e.target.value;
+                renderDocument();
+              }
+            });
+          },
+        }],
       ]],
     ]])],
   ]];
