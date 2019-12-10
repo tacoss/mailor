@@ -77,7 +77,7 @@ ul {
 }
 
 #main > iframe,
-#main > textarea {
+#main > fieldset {
   box-shadow: 0 1px 3px rgb(0, 0, 0, .5);
 }
 
@@ -124,4 +124,40 @@ ul {
 
 #opts a.active {
   background-color: #000;
+}
+
+#input {
+  padding: .5em;
+  min-width: 400px;
+  background: white;
+}
+
+#input {
+  border: 0;
+}
+
+#input li {
+  margin-bottom: .5em;
+}
+
+#input li:last-child {
+  margin-bottom: 0;
+}
+
+#input li + li {
+  padding-top: .5em;
+  border-top: 1px solid #C1B0CB;
+}
+
+#input li span {
+  min-width: 40%;
+}
+
+#input li label {
+  display: flex;
+  align-items: top;
+}
+
+#input textarea {
+  width: 100%;
 }
