@@ -1,5 +1,8 @@
 const nsfw = require('nsfw');
-const { statSync, existsSync } = require('fs');
+
+const {
+  readdirSync, readFileSync, statSync, existsSync,
+} = require('fs');
 
 const {
   join, resolve, relative, basename,
@@ -84,6 +87,15 @@ module.exports = async (templates, opts) => {
         }
 
         res.end(Mailer.render(join(opts.destDir, base), data));
+        return;
+      }
+
+      if (req.url === '/variables.json') {
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify(readdirSync(opts.destDir).reduce((prev, cur) => {
+          prev[cur.replace('.html', '')] = readFileSync(join(opts.destDir, cur)).toString().match(/\{\{(\w+?)\}\}/g);
+          return prev;
+        }, {})));
         return;
       }
 
