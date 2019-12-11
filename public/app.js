@@ -119,7 +119,9 @@ async function main() {
   }
 
   if (Object.keys(vars).length) {
-    curVars = input(vars[Object.keys(vars)[0]]);
+    const key = location.hash.split('#')[1] || Object.keys(vars)[0];
+
+    curVars = input(vars[key]);
     edit();
   }
 
