@@ -124,7 +124,7 @@ describe('Mailor', () => {
     stdMocks.use();
 
     const mailer = Mailor.buildMailer(path.join(__dirname, 'fixtures'), { maildev: true });
-    const maildev = require('../lib/maildev');
+    const maildev = require('../lib/maildev')();
 
     await maildev.listen();
 
@@ -192,7 +192,7 @@ describe('integration', () => {
     it('should start maildev server', async () => {
       stdMocks.use();
 
-      const maildev = require('../lib/maildev');
+      const maildev = require('../lib/maildev')();
 
       await maildev.listen();
 
