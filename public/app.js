@@ -46,7 +46,7 @@ async function main() {
     };
 
     const locals = curVars.reduce((prev, cur) => {
-      prev[cur.key] = cur.value || cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase();
+      prev[cur.key] = cur.value || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
       return prev;
     }, {});
 
