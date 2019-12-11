@@ -14,6 +14,10 @@ const title = document.title;
 const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
 
+function titleCase(text) {
+  return text[0].toUpperCase() + text.substr(1).replace(/-([a-z])/g, (_, k) => ` ${k.toUpperCase()}`);
+}
+
 async function get(url) {
   const resp = await fetch(url);
   const data = await resp.json();
@@ -38,7 +42,7 @@ async function main() {
     const id = location.hash.split('#')[1];
 
     mainEl.onload = () => {
-      document.title = `${title} (${id} - ${mainEl.contentDocument.title})`;
+      document.title = `${title} (${titleCase(id)} - ${mainEl.contentDocument.title})`;
     };
 
     const locals = curVars.reduce((prev, cur) => {
@@ -161,7 +165,7 @@ async function main() {
   mount('#list', ['.pad', [
     ['h3', 'Available templates:'],
     ['ul', data.map(x => ['li', [
-      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, x],
+      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, titleCase(x)],
     ]])],
   ]], $);
 
