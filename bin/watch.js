@@ -65,6 +65,8 @@ module.exports = async (templates, opts) => {
 
   const devPort = opts.port || 1081;
 
+  let maildev;
+
   liveServer.start({
     logLevel: 0,
     port: devPort,
@@ -90,6 +92,28 @@ module.exports = async (templates, opts) => {
         return;
       }
 
+      if (req.url.indexOf('/send_template/') === 0) {
+        const [base, query] = req.url.substr(15).split('?');
+        const parts = query.split(',');
+
+        let data = {};
+
+        try {
+          data = JSON.parse(decodeURIComponent(parts.pop()));
+        } catch (e) {
+          // ignore
+        }
+
+        require('./send')([join(opts.destDir, base)], {
+          subject: `[TEST] ${base}`,
+          address: parts.join(','),
+          locals: data,
+        });
+
+        res.end();
+        return;
+      }
+
       if (req.url === '/variables.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(readdirSync(opts.destDir).reduce((prev, cur) => {
@@ -109,8 +133,6 @@ module.exports = async (templates, opts) => {
   });
 
   process.stdout.write(`\rPreview your email templates at http://0.0.0.0:${devPort}\n`); // eslint-disable-line
-
-  let maildev;
 
   if (opts.server !== false) {
     maildev = require('../lib/maildev')(opts.relayOptions);
