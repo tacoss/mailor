@@ -34,7 +34,7 @@ async function post(url, data) {
     },
   });
 
-  return resp.json();
+  return resp.text();
 }
 
 async function main() {
@@ -195,7 +195,7 @@ async function main() {
   }
 
   function sendMail() {
-    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`);
+    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`).then(alert);
   }
 
   function setMail(e) {
