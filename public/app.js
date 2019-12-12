@@ -63,7 +63,7 @@ async function main() {
   }
 
   function getQueryParams() {
-    return  encodeURIComponent(JSON.stringify(getLocals()));
+    return encodeURIComponent(JSON.stringify(getLocals()));
   }
 
   function renderDocument() {

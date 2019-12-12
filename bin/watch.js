@@ -108,7 +108,7 @@ module.exports = async (templates, opts) => {
           subject: `[TEST] ${base}`,
           address: parts.join(','),
           locals: data,
-        }).then(result => {
+        }).then(() => {
           res.end('Email was successfully sent');
         }).catch(e => {
           res.end(e.message);
