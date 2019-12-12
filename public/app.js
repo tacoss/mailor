@@ -25,10 +25,23 @@ async function get(url) {
   return data;
 }
 
+async function post(url, data) {
+  const resp = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return resp.json();
+}
+
 async function main() {
   const data = await get('/templates.json');
   const vars = await get('/variables.json');
 
+  let target;
   let curVars;
   let lastLink;
   let lastOption;
@@ -38,21 +51,27 @@ async function main() {
     mainEl.style.width = `${modes[currentMode || 0]}px`;
   }
 
-  function renderDocument() {
-    const id = location.hash.split('#')[1];
+  function getId() {
+    return location.hash.split('#')[1];
+  }
 
-    mainEl.onload = () => {
-      document.title = `${title} (${titleCase(id)} - ${mainEl.contentDocument.title})`;
-    };
-
-    const locals = curVars.reduce((prev, cur) => {
+  function getLocals() {
+    return curVars.reduce((prev, cur) => {
       prev[cur.key] = cur.value || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
       return prev;
     }, {});
+  }
 
-    const q = encodeURIComponent(JSON.stringify(locals));
+  function getQueryParams() {
+    return  encodeURIComponent(JSON.stringify(getLocals()));
+  }
 
-    mainEl.src = `/generated_templates/${id}.html?${q}`;
+  function renderDocument() {
+    mainEl.onload = () => {
+      document.title = `${title} (${titleCase(getId())} - ${mainEl.contentDocument.title})`;
+    };
+
+    mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
 
     resize();
   }
@@ -104,6 +123,7 @@ async function main() {
   const tag = bind(render, listeners());
 
   const $$ = editor('#input', tag);
+  const refs = {};
 
   function edit() {
     $$.update(curVars);
@@ -164,6 +184,25 @@ async function main() {
     resize();
   }
 
+  function setRef(name) {
+    return e => {
+      refs[name] = e;
+    };
+  }
+
+  function getRef(name) {
+    return refs[name];
+  }
+
+  function sendMail() {
+    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`);
+  }
+
+  function setMail(e) {
+    target = e.target.value;
+    getRef('email').disabled = !target;
+  }
+
   mount('#list', ['.pad', [
     ['h3', 'Available templates:'],
     ['ul', data.map(x => ['li', [
@@ -172,6 +211,10 @@ async function main() {
   ]], $);
 
   mount('#opts', ['ul.pad.flex', [
+    ['li', [
+      ['input', { type: 'email', oninput: setMail }],
+      ['button', { disabled: true, onclick: sendMail, oncreate: setRef('email') }, 'Send'],
+    ]],
     ['li', [['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview']]],
     ['li', [['a', { href: '#', onclick: showData }, 'Data']]],
     ['li', [

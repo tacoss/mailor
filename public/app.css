@@ -122,6 +122,11 @@ ul {
   text-decoration: none;
 }
 
+#opts button {
+  margin-left: .5em;
+  padding: 0 .5em;
+}
+
 #opts a.active {
   background-color: #000;
 }
