@@ -1,4 +1,6 @@
 const argv = require('wargs')(process.argv.slice(2), {
+  boolean: ['o', 'O', 'B', 'S', 'relay-secure'],
+  string: ['p', 'd', 't', 's', 'a', 'f', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
@@ -33,6 +35,13 @@ const options = {
   subject: argv.flags.subject,
   address: argv.flags.address,
   filename: argv.flags.filename,
+  relayOptions: {
+    to: argv.flags.relayTo,
+    host: argv.flags.relayHost,
+    user: argv.flags.relayUser,
+    pass: argv.flags.relayPass,
+    secure: argv.flags.relaySecure,
+  },
   srcDir: argv._.slice(1).map(x => resolve(x)),
   destDir: resolve(argv.flags.dest || './generated'),
 };

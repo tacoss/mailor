@@ -113,7 +113,7 @@ module.exports = async (templates, opts) => {
   let maildev;
 
   if (opts.server !== false) {
-    maildev = require('../lib/maildev');
+    maildev = require('../lib/maildev')(opts.relayOptions);
     maildev.listen();
   }
 
