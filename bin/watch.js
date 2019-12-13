@@ -119,7 +119,12 @@ module.exports = async (templates, opts) => {
       if (req.url === '/variables.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(readdirSync(opts.destDir).reduce((prev, cur) => {
-          prev[cur.replace('.html', '')] = readFileSync(join(opts.destDir, cur)).toString().match(/\{\{(\w+?)\}\}/g);
+          const usedVars = readFileSync(join(opts.destDir, cur)).toString().match(/\{\{(\w+?)\}\}/g) || [];
+
+          prev[cur.replace('.html', '')] = usedVars.reduce((p, c) => {
+            if (!p.includes(c)) p.push(c);
+            return p;
+          }, []);
           return prev;
         }, {})));
         return;
