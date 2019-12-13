@@ -141,6 +141,10 @@ async function main() {
   if (Object.keys(vars).length) {
     const key = location.hash.split('#')[1] || Object.keys(vars)[0];
 
+    if (!location.hash) {
+      location.hash = key;
+    }
+
     curVars = input(vars[key]);
     edit();
   }
