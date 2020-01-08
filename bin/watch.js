@@ -40,6 +40,8 @@ module.exports = async (templates, opts) => {
         const filename = evt.newFile || evt.file;
         const fullpath = join(evt.newDirectory || evt.directory, filename);
 
+        const file = relative(opts.cwd, fullpath);
+
         if (existsSync(fullpath) && statSync(fullpath).isFile()) {
           let type = (evt.action === 1 || evt.action === 2)
             ? 'changed'
@@ -48,20 +50,18 @@ module.exports = async (templates, opts) => {
           type = type || (evt.action === 0 ? 'add' : null);
           type = type || (evt.action === 3 ? 'unlink' : null);
 
-          const file = relative(opts.cwd, fullpath);
-
           if (type == 'add' && filename.includes('.pug') && !templates.includes(fullpath)) {
             templates.push(fullpath)
           }
 
-          if (type == 'unlink' && templates.includes(fullpath)) {
-            templates = templates.filter(x => x !== fullpath);
-          }
-
           if ((!files.includes(file) && type === 'add') || type === 'changed') {
+            if (type === 'add') process.stdout.write(`Added ${file}\n`);
             files.push(fullpath);
             update();
           }
+        } else if (templates.includes(fullpath)) {
+          templates = templates.filter(x => x !== fullpath);
+          process.stdout.write(`Removed ${file}\n`);
         }
       });
     }).then(watcher => {
