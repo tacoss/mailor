@@ -37,7 +37,8 @@ module.exports = async (templates, opts) => {
   const watchers = await Promise.all(opts.srcDir.map(baseDir => {
     return nsfw(baseDir, evts => {
       evts.forEach(evt => {
-        const fullpath = join(evt.newDirectory || evt.directory, evt.newFile || evt.file);
+        const filename = evt.newFile || evt.file;
+        const fullpath = join(evt.newDirectory || evt.directory, filename);
 
         if (existsSync(fullpath) && statSync(fullpath).isFile()) {
           let type = (evt.action === 1 || evt.action === 2)
@@ -48,6 +49,14 @@ module.exports = async (templates, opts) => {
           type = type || (evt.action === 3 ? 'unlink' : null);
 
           const file = relative(opts.cwd, fullpath);
+
+          if (type == 'add' && filename.includes('.pug') && !templates.includes(fullpath)) {
+            templates.push(fullpath)
+          }
+
+          if (type == 'unlink' && templates.includes(fullpath)) {
+            templates = templates.filter(x => x !== fullpath);
+          }
 
           if ((!files.includes(file) && type === 'add') || type === 'changed') {
             files.push(fullpath);
