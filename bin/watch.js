@@ -50,8 +50,8 @@ module.exports = async (templates, opts) => {
           type = type || (evt.action === 0 ? 'add' : null);
           type = type || (evt.action === 3 ? 'unlink' : null);
 
-          if (type == 'add' && filename.includes('.pug') && !templates.includes(fullpath)) {
-            templates.push(fullpath)
+          if (type === 'add' && filename.includes('.pug') && !templates.includes(fullpath)) {
+            templates.push(fullpath);
           }
 
           if ((!files.includes(file) && type === 'add') || type === 'changed') {
