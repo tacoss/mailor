@@ -238,9 +238,9 @@ describe('integration', () => {
           stdMocks.restore();
           ok();
 
-          const { stdout } = stdMocks.flush();
+          const { stdout, stderr } = stdMocks.flush();
 
-          expect(stdout[0]).to.contains('TypeError');
+          expect(stdout[0]).to.contains('Error: Parsing failed');
         }, 500);
       });
     });
@@ -255,7 +255,19 @@ describe('integration', () => {
       process.argv[3] = tmp;
 
       require('../lib/worker')();
-      input.send('OSOMS');
+      input.send(`
+        <mjml>
+          <mj-body>
+            <mj-section>
+              <mj-column>
+                <mj-text>
+                  OK
+                </mj-text>
+              </mj-column>
+            </mj-section>
+          </mj-body>
+        </mjml>
+      `);
       input.send(null);
 
       await new Promise(ok => {
@@ -266,7 +278,7 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(fs.readFileSync(tmp).toString()).to.eql('OSOMS');
+          expect(fs.readFileSync(tmp).toString()).to.contains('!doctype html');
           expect(stdout).to.eql([]);
         }, 500);
       });
