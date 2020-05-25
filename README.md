@@ -1,6 +1,6 @@
 # Mailor
 
-> This module glues Maildev and HEML with some Pug and Mustache to enable an easier development workflow for mailings on NodeJS.
+> This module glues Maildev and MJML with some Pug and Mustache to enable an easier development workflow for mailings on NodeJS.
 
 <div align="center">
 
@@ -21,11 +21,10 @@ Now, you can start creating templates using pure `.pug` files:
 
 **templates/test1.pug**
 ```pug
-heml
-  head
-    subject Test subject
-  body
-    h1 It works!
+mjml
+  mj-body: mj-section
+    mj-column: mj-text
+      h1 It works!
 ```
 
 Build or watch for changes, e.g.
