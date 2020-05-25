@@ -1,6 +1,6 @@
 {
   "name": "mailor",
-  "version": "0.0.23",
+  "version": "0.1.0",
   "description": "Mailer tools",
   "main": "lib/mailer.js",
   "bin": {
