@@ -1,11 +1,12 @@
 const nsfw = require('nsfw');
+const glob = require('glob');
 
 const {
   readdirSync, readFileSync, statSync, existsSync,
 } = require('fs');
 
 const {
-  join, resolve, relative, basename,
+  join, resolve, relative, basename, dirname,
 } = require('path');
 
 const Mailer = require('../lib/mailer');
@@ -34,7 +35,11 @@ module.exports = async (templates, opts) => {
     }, opts.timeout || 200);
   }
 
-  const watchers = await Promise.all(opts.srcDir.map(baseDir => {
+  const sources = opts.srcDir
+    .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), [])
+    .reduce((prev, cur) => prev.concat(dirname(cur)), []);
+
+  const watchers = await Promise.all(sources.map(baseDir => {
     return nsfw(baseDir, evts => {
       evts.forEach(evt => {
         const filename = evt.newFile || evt.file;

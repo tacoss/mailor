@@ -37,6 +37,7 @@
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "live-server": "^1.2.1",
     "maildev": "^1.1.0",
     "mjml": "^4.6.3",

@@ -16,12 +16,14 @@ const argv = require('wargs')(process.argv.slice(2), {
 });
 
 const {
-  readdirSync, statSync, existsSync,
+  existsSync,
 } = require('fs');
 
 const {
-  resolve, join,
+  resolve,
 } = require('path');
+
+const glob = require('glob');
 
 const action = argv._[0] || 'help';
 
@@ -71,27 +73,9 @@ Try adding --no-build (-B) for faster startups during development
 
 `;
 
-function getTemplates() {
-  return options.srcDir.reduce((prev, cur) => {
-    const isFile = existsSync(cur) && statSync(cur).isFile();
-
-    const sources = isFile ? [cur] : readdirSync(cur)
-      .map(x => join(cur, x))
-      .filter(x => {
-        if (statSync(x).isFile() && x.indexOf('.pug') !== -1) {
-          return true;
-        }
-
-        return false;
-      });
-
-    prev.push(...sources);
-
-    return prev;
-  }, []);
-}
-
 async function main() {
+  const opts = { ...options, locals: argv.data };
+
   try {
     switch (action) {
       case 'build':
@@ -100,11 +84,11 @@ async function main() {
           process.stdout.write('\rLoading templates...\r');
         });
 
-        await require(`./${action}`)(getTemplates(), { ...options, locals: argv.data });
+        await require(`./${action}`)(options.srcDir.reduce((prev, cur) => prev.concat(glob.sync(`${cur}/*.pug`)), []), opts);
         break;
 
       case 'send':
-        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes('.html')), { ...options, locals: argv.data });
+        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes('.html')), opts);
         break;
 
       case 'help':
