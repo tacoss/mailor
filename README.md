@@ -30,7 +30,7 @@ mjml
 Build or watch for changes, e.g.
 
 ```bash
-$ mailor watch templates -o generated --no-open
+$ mailor watch templates -d generated --no-open
 ```
 
 Once built, try sending it through the local SMTP, e.g.
