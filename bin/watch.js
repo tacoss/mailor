@@ -84,6 +84,7 @@ module.exports = async (templates, opts) => {
   liveServer.start({
     logLevel: 0,
     port: devPort,
+    watch: opts.destDir,
     open: opts.open !== false,
     ignore: 'generated_templates',
     root: resolve(__dirname, '../public'),
