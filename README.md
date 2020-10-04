@@ -17,6 +17,8 @@ Get it globally or within your project:
 $ npm i -g mailor # or `npm i mailor --save-dev`
 ```
 
+> Use `mailor init` to create a `templates/` directory with an example.pug ready play with!
+
 Now, you can start creating templates using pure `.pug` files:
 
 **templates/test1.pug**

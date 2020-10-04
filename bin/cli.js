@@ -1,10 +1,11 @@
 const argv = require('wargs')(process.argv.slice(2), {
-  boolean: ['o', 'O', 'B', 'S', 'relay-secure'],
+  boolean: ['V', 'o', 'O', 'B', 'S', 'relay-secure'],
   string: ['p', 'd', 't', 's', 'a', 'f', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
     d: 'dest',
+    V: 'verbose',
     t: 'timeout',
     s: 'subject',
     a: 'address',
@@ -16,19 +17,24 @@ const argv = require('wargs')(process.argv.slice(2), {
 });
 
 const {
+  copySync,
+  mkdirSync,
   existsSync,
-} = require('fs');
+} = require('fs-extra');
 
 const {
+  join,
   resolve,
+  relative,
 } = require('path');
 
 const glob = require('glob');
 
+const _cwd = process.cwd();
 const action = argv._[0] || 'help';
 
 const options = {
-  cwd: process.cwd(),
+  cwd: _cwd,
   port: argv.flags.port,
   open: argv.flags.open,
   build: argv.flags.build,
@@ -56,6 +62,7 @@ const USAGE_INFO = `
 Usage:
   ${thisBin} watch|build [...]
   ${thisBin} send [...]
+  ${thisBin} init
 
 Options:
   -p, --port       # Custom port for preview page
@@ -65,6 +72,8 @@ Options:
   -s, --subject    # Subject for the message sent
   -a, --address    # Used address for sending e-mails
   -f, --filename   # Used when sending emails from a directory
+
+The init task will create the templates directory if does not already exists
 
 When using the send command you MUST have already started in watch mode, to disable
 the maildev server (if already running) just add --no-server (-S) in your options
@@ -95,11 +104,23 @@ async function main() {
         process.stdout.write(USAGE_INFO);
         break;
 
+      case 'init':
+        const tplDir = join(_cwd, argv._[1] || 'templates');
+
+        if (existsSync(tplDir)) {
+          throw new Error(`Directory ${relative(_cwd, tplDir)} already exists`);
+        }
+
+        mkdirSync(tplDir);
+        copySync(join(__dirname, 'template/example.pug'), join(tplDir, 'example.pug'));
+        process.stdout.write(`\rDirectory ${relative(_cwd, tplDir)} created\n`);
+        break;
+
       default:
         throw new Error(`Unknown ${action} action`);
     }
   } catch (e) {
-    process.stderr.write(`\x1b[31m${e.stack}\x1b[0m\n`);
+    process.stderr.write(`\x1b[31m${e[argv.flags.verbose ? 'stack' : 'message']}\x1b[0m\n`);
     process.exit(1);
   }
 }
