@@ -57,6 +57,17 @@ ul {
     'l m';
 }
 
+@media screen and (max-width: 719px) {
+  #app {
+    grid-template-columns: auto;
+    grid-template-rows: 5em 2.4em auto;
+    grid-template-areas:
+    'l'
+    'o'
+    'm';
+  }
+}
+
 #list {
   background-color: #FFF;
   grid-area: l;
@@ -69,6 +80,7 @@ ul {
 
 #main {
   display: flex;
+  overflow: auto;
   align-items: center;
   justify-content: center;
   border-top: 1px solid #C1B0CB;

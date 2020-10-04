@@ -68,7 +68,7 @@ async function main() {
 
   function renderDocument() {
     mainEl.onload = () => {
-      document.title = `${title} (${titleCase(getId())} - ${mainEl.contentDocument.title})`;
+      document.title = `${title} (${titleCase(getId())} - ${mainEl.contentDocument.title || 'Untitled'})`;
     };
 
     mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
@@ -116,7 +116,7 @@ async function main() {
           },
         }, '×'],
       ]],
-    ]])],
+    ]]).concat(!state.items.length ? [['li', 'No variables found']] : [])],
   ]];
 
   const editor = view($view, $state, $actions);
