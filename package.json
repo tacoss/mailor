@@ -44,7 +44,7 @@
     "mustache": "^4.0.1",
     "nodemailer": "^6.0.0",
     "pug": "^3.0.0",
-    "wargs": "^0.9.1"
+    "wargs": "^0.9.2"
   },
   "devDependencies": {
     "axios": ">=0.18.1",
