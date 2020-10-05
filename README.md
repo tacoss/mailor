@@ -78,5 +78,5 @@ Local variables are given as `data` and they're rendered by Mustache to build th
 Locals for pug-templates MUST be provided as values during `mailor` invocation, e.g.
 
 ```bash
-$ mailor build templates -o generated username="John Doe" token="x-f4c8"
+$ mailor build templates -d generated username="John Doe" token="x-f4c8"
 ```
