@@ -4,7 +4,7 @@
 
 <div align="center">
 
-<img src="inbox.svg" width="250" height="250" />
+<img src="public/inbox.svg" width="250" height="250" />
 
 [![Build Status](https://api.travis-ci.org/tacoss/mailor.svg?branch=master)](https://travis-ci.org/tacoss/mailor)
 [![NPM version](https://badge.fury.io/js/mailor.svg)](http://badge.fury.io/js/mailor)
@@ -75,9 +75,9 @@ mjml
 
 <table>
   <tr><td>
-    <img src="public/preview.png" alt="Preview panel" width="300" height="508" />
+    <img src="public/preview.png" alt="Preview panel" width="300" height="461" />
   </td><td>
-    <img src="public/input.png" alt="Input panel" width="300" height="508" />
+    <img src="public/input.png" alt="Input panel" width="300" height="461" />
   </td></tr>
 </table>
 
