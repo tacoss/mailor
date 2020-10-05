@@ -117,7 +117,13 @@ async function main() {
 
   function Radio(item, value, label, checked) {
     return ['label', [
-      ['input', { type: 'radio', name: item.key, onchange: setItem(item), value, checked }],
+      ['input', {
+        type: 'radio',
+        name: item.key,
+        onchange: setItem(item),
+        value,
+        checked,
+      }],
       label || value,
     ]];
   }
@@ -135,9 +141,14 @@ async function main() {
 
     if (typeof item.bool !== 'undefined') {
       return ['div.flex', [
-        ['input', { type: 'checkbox', name: item.key, id: item.key, onchange(e) {
-          setValue(item, e.target.checked);
-        } }],
+        ['input', {
+          type: 'checkbox',
+          name: item.key,
+          id: item.key,
+          onchange(e) {
+            setValue(item, e.target.checked);
+          },
+        }],
       ]];
     }
 

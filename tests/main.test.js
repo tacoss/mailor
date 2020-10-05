@@ -182,7 +182,7 @@ describe('integration', () => {
       const { stdout } = stdMocks.flush();
 
       expect(stdout).to.eql([
-        '\rProcessing 0 files:\n',
+        '\rProcessing 0 files...\n',
         '\r\u001b[KDone, 0 templates rendered.\n',
       ]);
     });

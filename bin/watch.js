@@ -35,7 +35,7 @@ function fetchTags(template) {
 
       template = template.replace(x, '');
 
-      if (!memo.find(x => x.key === fixedKey)) {
+      if (!memo.find(y => y.key === fixedKey)) {
         return memo.concat({
           key: fixedKey,
           falsy: prop.substr(2, 1) === '^',
