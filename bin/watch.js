@@ -36,8 +36,7 @@ module.exports = async (templates, opts) => {
   }
 
   const sources = opts.srcDir
-    .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), [])
-    .reduce((prev, cur) => prev.concat(dirname(cur)), []);
+    .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), []);
 
   const watchers = await Promise.all(sources.map(baseDir => {
     return nsfw(baseDir, evts => {
