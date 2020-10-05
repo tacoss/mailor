@@ -80,6 +80,7 @@ module.exports = async (templates, opts) => {
     return false;
   });
 
+
   if (opts.build !== false) {
     await run(templates);
   }
