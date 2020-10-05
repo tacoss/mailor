@@ -62,15 +62,23 @@ async function main() {
     return location.hash.split('#')[1];
   }
 
-  function getLocals() {
-    return curVars.reduce((prev, cur) => {
-      prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
+  function getLocals(source) {
+    return source.reduce((prev, cur) => {
+      const fixedKey = cur.key
+        .replace(/^[#^]/, '')
+        .replace(/[a-z](?=[A-Z])/g, '$&_');
+
+      if (cur.value === true) {
+        prev[fixedKey] = getLocals(cur.data);
+      } else if (cur.value !== false) {
+        prev[fixedKey] = cur.value || defs[fixedKey] || `[${fixedKey.toUpperCase()}]`;
+      }
       return prev;
     }, {});
   }
 
   function getQueryParams() {
-    return encodeURIComponent(JSON.stringify(getLocals()));
+    return encodeURIComponent(JSON.stringify(getLocals(curVars)));
   }
 
   function renderDocument() {
@@ -83,13 +91,9 @@ async function main() {
     resize();
   }
 
-  function setValue(key, value) {
-    curVars.forEach(sub => {
-      if (sub.key === key) {
-        sub.value = value;
-        renderDocument();
-      }
-    });
+  function setValue(item, value) {
+    item.value = value;
+    renderDocument();
   }
 
   const $actions = {
@@ -102,31 +106,55 @@ async function main() {
     items: [],
   };
 
+  function setItem(item) {
+    return e => {
+      if (e.target.value === 'off') setValue(item, false);
+      if (e.target.value === 'on') setValue(item, true);
+    };
+  }
+
+  function Value(item, Self) {
+    if (item.data) {
+      return ['div.nested', [
+        ['span.group.clean', [
+          ['label', [['input', { type: 'radio', name: item.key, onchange: setItem(item), value: 'off', checked: true }], 'OFF']],
+          ['label', [['input', { type: 'radio', name: item.key, onchange: setItem(item), value: 'on' }], 'ON']],
+        ]],
+        Self(item.data),
+      ]];
+    }
+
+    return ['div.flex', [
+      ['textarea', {
+        name: item.key,
+        id: item.key,
+        rows: 2,
+        oncreate(e) {
+          item.ref = e;
+        },
+        onchange(e) {
+          setValue(item, e.target.value);
+        },
+      }],
+      ['a', {
+        onclick() {
+          item.ref.value = '';
+          setValue(item, '');
+        },
+      }, '×'],
+    ]];
+  }
+
+  function Data(items) {
+    return ['ul', items.map(item => ['li', [
+      ['label', { for: item.key }, item.key],
+      Value(item, Data),
+    ]])];
+  }
+
   const $view = state => ['div', [
     !state.items.length && ['p', 'No variables found'],
-    ['ul', state.items.map(item => ['li', [
-      ['label', [
-        item.key,
-        ['span.flex', [
-          ['textarea', {
-            name: item.key,
-            rows: 2,
-            oncreate(e) {
-              item.ref = e;
-            },
-            onchange(e) {
-              setValue(item.key, e.target.value);
-            },
-          }],
-          ['button', {
-            onclick() {
-              item.ref.value = '';
-              setValue(item.key, '');
-            },
-          }, '×'],
-        ]],
-      ]],
-    ]])],
+    Data(state.items),
   ]];
 
   const editor = view($view, $state, $actions);
@@ -138,8 +166,12 @@ async function main() {
   }
 
   function input(args) {
-    const defaults = args.reduce((prev, cur) => {
-      prev.push({ key: cur.replace(/\{+|\}+/g, '') });
+    const defaults = args.input.reduce((prev, cur) => {
+      if (!cur.input.length) {
+        prev.push({ key: cur.key });
+      } else {
+        prev.push({ key: cur.key, data: cur.input });
+      }
       return prev;
     }, []);
 

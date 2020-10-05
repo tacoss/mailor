@@ -15,6 +15,48 @@ function toArray(value) {
   return (!Array.isArray(value) && value) ? [value] : value || [];
 }
 
+function fetchTags(template) {
+  const info = {
+    input: [],
+  };
+
+  /* istanbul ignore else */
+  if (template.indexOf('{{') === -1 || template.indexOf('}}') === -1) {
+    return info;
+  }
+
+  /* istanbul ignore else */
+  if (template.indexOf('{{#') !== -1) {
+    const matches = template.match(/\{\{#([^#{}]+)\}\}([\s\S]+?)\{\{\/\1\}\}/g);
+
+    info.input = (matches || []).reduce((memo, x) => {
+      const prop = x.match(/\{\{#\w+\}\}/)[0];
+
+      template = template.replace(x, '');
+
+      return memo.concat({
+        key: prop.substr(3, prop.length - 5),
+        ...fetchTags(x.substr(prop.length, x.length - (prop.length * 2))),
+      });
+    }, []);
+  }
+
+  const matches = template.match(/\{\{[^{#}]+\}\}/g) || [];
+
+  matches.forEach(match => {
+    const fixedKey = match.substr(2, match.length - 4).split(' ').pop();
+
+    if (!info.input.find(x => x.key === fixedKey)) {
+      info.input.push({
+        key: fixedKey,
+        input: [],
+      });
+    }
+  });
+
+  return info;
+}
+
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
     try {
@@ -144,12 +186,9 @@ module.exports = async (templates, opts) => {
       if (req.url === '/variables.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(readdirSync(opts.destDir).reduce((prev, cur) => {
-          const usedVars = readFileSync(join(opts.destDir, cur)).toString().match(/\{\{(\w+?)\}\}/g) || [];
+          const fileContent = readFileSync(join(opts.destDir, cur)).toString();
 
-          prev[cur.replace('.html', '')] = usedVars.reduce((p, c) => {
-            if (!p.includes(c)) p.push(c);
-            return p;
-          }, []);
+          prev[cur.replace('.html', '')] = fetchTags(fileContent);
           return prev;
         }, {})));
         return;

@@ -6,3 +6,9 @@ block body
       Text(color='#626262' font-size='22px') {{MAIN_SUBJECT}}
       Text(color='#525252') {{MAIN_MESSAGE}}
       Button(href='{{MAIN_LINK}}') {{MAIN_ACTION}}
+
+  Section
+    {{#SOME_LIST}}
+    Column
+      Text {{ITS_VALUE}}
+    {{/SOME_LIST}}

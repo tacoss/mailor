@@ -61,12 +61,45 @@ ul {
   border-radius: 5px;
 }
 
+.group.clean {
+  border: none;
+}
+.group.clean label::before {
+  display: none;
+}
+
+.group > label {
+  display: inline-block;
+  position: relative;
+  padding: 0 5px;
+}
+
+.group > label > input {
+  margin-right: 5px;
+}
+
 .group + .group {
   margin-left: 10px;
 }
 
 .toolbar {
   background-color: #FFF;
+}
+
+.nested {
+  margin-top: 10px;
+  padding-left: 10px;
+  border-left: 1px dashed silver;
+}
+.nested > ul + ul {
+  border-top: 1px dashed #C1B0CB;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+.nested > span {
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #app {
@@ -116,6 +149,8 @@ ul {
 #main > iframe,
 #main > fieldset {
   box-shadow: 0 1px 3px rgb(0, 0, 0, .5);
+  max-height: 85%;
+  overflow: auto;
 }
 
 #toggle ~ #input { display: none; }
@@ -151,7 +186,8 @@ a {
 }
 
 #opts a + a::before,
-#opts input + button::before {
+#opts input + button::before,
+#input .group label + label::before {
   height: 100%;
   left: 0;
   top: 0;
@@ -199,6 +235,15 @@ a.active {
 
 #input li {
   margin-bottom: 10px;
+  position: relative;
+}
+
+#input a {
+  margin-left: 5px;
+  cursor: pointer;
+}
+#input a:hover {
+  color: red;
 }
 
 #input li:last-child {
@@ -207,10 +252,10 @@ a.active {
 
 #input li + li {
   padding-top: 10px;
-  border-top: 1px solid #C1B0CB;
+  border-top: 1px dashed #C1B0CB;
 }
 
-#input label {
+#input li > label {
   display: block;
 }
 
