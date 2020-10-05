@@ -1,14 +1,8 @@
-mjml
-  mj-body(background-color='#FAFAFA')
-    mj-section
-      mj-column
-        mj-text(color='#626262') {{COMPANY_NAME}}
-    mj-section(background-url="{{MY_BANNER}}" background-size='cover' background-repeat='no-repeat')
-      mj-column
-        mj-text(align='center' color='#FFF' font-size='40px') {{COMPANY_SLOGAN}}
-        mj-button(href='{{TOP_LINK}}') {{TOP_ACTION}}
-    mj-section
-      mj-column
-        mj-text(color='#626262' font-size='22px') {{MAIN_SUBJECT}}
-        mj-text(color='#525252') {{MAIN_MESSAGE}}
-        mj-button(href='{{MAIN_LINK}}') {{MAIN_ACTION}}
+extend _layout
+
+block body
+  mj-section
+    mj-column
+      mj-text(color='#626262' font-size='22px') {{MAIN_SUBJECT}}
+      mj-text(color='#525252') {{MAIN_MESSAGE}}
+      mj-button(href='{{MAIN_LINK}}') {{MAIN_ACTION}}

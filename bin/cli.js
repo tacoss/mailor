@@ -1,10 +1,11 @@
 const argv = require('wargs')(process.argv.slice(2), {
   boolean: ['V', 'o', 'O', 'B', 'S', 'relay-secure'],
-  string: ['p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
+  string: ['w', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
     d: 'dest',
+    w: 'watch',
     V: 'verbose',
     t: 'timeout',
     s: 'subject',
@@ -39,6 +40,7 @@ const options = {
   port: argv.flags.port,
   open: argv.flags.open,
   build: argv.flags.build,
+  watch: argv.flags.watch,
   server: argv.flags.server,
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
@@ -70,6 +72,7 @@ Options:
   -p, --port       # Custom port for preview page
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
+  -w, --watch      # Additional directories to watch for changes
   -t, --timeout    # Destination for generated templates
   -s, --subject    # Subject for the message sent
   -a, --address    # Used address for sending e-mails

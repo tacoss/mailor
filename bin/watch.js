@@ -11,6 +11,10 @@ const {
 
 const Mailer = require('../lib/mailer');
 
+function toArray(value) {
+  return (!Array.isArray(value) && value) ? [value] : value || [];
+}
+
 module.exports = async (templates, opts) => {
   async function run(srcFiles) {
     try {
@@ -36,7 +40,10 @@ module.exports = async (templates, opts) => {
   }
 
   const sources = opts.srcDir
-    .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), []);
+    .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), [])
+    .concat(toArray(opts.watch).map(x => resolve(x)));
+
+  process.stdout.write(`\rWatching: ${sources.map(x => relative(opts.cwd, x)).join(', ')}\n`);
 
   const watchers = await Promise.all(sources.map(baseDir => {
     return nsfw(baseDir, evts => {
@@ -79,13 +86,16 @@ module.exports = async (templates, opts) => {
   const publicDir = resolve(__dirname, '../public');
   const devPort = opts.port || 1081;
 
+  const watchingDirs = [opts.destDir, publicDir]
+    .concat(opts.jsonfile ? opts.jsonfile : []);
+
   let maildev;
 
   liveServer.start({
     logLevel: 0,
     port: devPort,
     root: publicDir,
-    watch: [opts.destDir, publicDir].concat(opts.jsonfile ? opts.jsonfile : []),
+    watch: watchingDirs,
     open: opts.open !== false,
     ignore: 'generated_templates',
     mount: [
