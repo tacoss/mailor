@@ -257,8 +257,11 @@ a.active {
 
 #input li > label {
   display: block;
+  color: gray;
 }
-
+#input li > div > input {
+  margin-top: 5px;
+}
 #input textarea {
   width: 100%;
 }

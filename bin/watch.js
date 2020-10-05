@@ -27,17 +27,23 @@ function fetchTags(template) {
 
   /* istanbul ignore else */
   if (template.indexOf('{{#') !== -1) {
-    const matches = template.match(/\{\{#([^#{}]+)\}\}([\s\S]+?)\{\{\/\1\}\}/g);
+    const matches = template.match(/\{\{[#^]([^#{}]+)\}\}([\s\S]+?)\{\{\/\1\}\}/g);
 
     info.input = (matches || []).reduce((memo, x) => {
-      const prop = x.match(/\{\{#\w+\}\}/)[0];
+      const prop = x.match(/\{\{[#^]\w+\}\}/)[0];
+      const fixedKey = prop.substr(3, prop.length - 5);
 
       template = template.replace(x, '');
 
-      return memo.concat({
-        key: prop.substr(3, prop.length - 5),
-        ...fetchTags(x.substr(prop.length, x.length - (prop.length * 2))),
-      });
+      if (!memo.find(x => x.key === fixedKey)) {
+        return memo.concat({
+          key: fixedKey,
+          falsy: prop.substr(2, 1) === '^',
+          ...fetchTags(x.substr(prop.length, x.length - (prop.length * 2))),
+        });
+      }
+
+      return memo;
     }, []);
   }
 

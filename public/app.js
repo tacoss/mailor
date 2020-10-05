@@ -68,8 +68,10 @@ async function main() {
         .replace(/^[#^]/, '')
         .replace(/[a-z](?=[A-Z])/g, '$&_');
 
-      if (cur.value === true) {
-        prev[fixedKey] = getLocals(cur.data);
+      if (cur.data) {
+        prev[fixedKey] = cur.value ? getLocals(cur.data) : null;
+      } else if (typeof cur.bool !== 'undefined') {
+        prev[fixedKey] = cur.value;
       } else if (cur.value !== false) {
         prev[fixedKey] = cur.value || defs[fixedKey] || `[${fixedKey.toUpperCase()}]`;
       }
@@ -113,14 +115,29 @@ async function main() {
     };
   }
 
+  function Radio(item, value, label, checked) {
+    return ['label', [
+      ['input', { type: 'radio', name: item.key, onchange: setItem(item), value, checked }],
+      label || value,
+    ]];
+  }
+
   function Value(item, Self) {
     if (item.data) {
       return ['div.nested', [
         ['span.group.clean', [
-          ['label', [['input', { type: 'radio', name: item.key, onchange: setItem(item), value: 'off', checked: true }], 'OFF']],
-          ['label', [['input', { type: 'radio', name: item.key, onchange: setItem(item), value: 'on' }], 'ON']],
+          Radio(item, 'off', 'OFF', true),
+          Radio(item, 'on', 'ON'),
         ]],
         Self(item.data),
+      ]];
+    }
+
+    if (typeof item.bool !== 'undefined') {
+      return ['div.flex', [
+        ['input', { type: 'checkbox', name: item.key, id: item.key, onchange(e) {
+          setValue(item, e.target.checked);
+        } }],
       ]];
     }
 
@@ -168,7 +185,7 @@ async function main() {
   function input(args) {
     const defaults = args.input.reduce((prev, cur) => {
       if (!cur.input.length) {
-        prev.push({ key: cur.key });
+        prev.push({ key: cur.key, bool: cur.falsy });
       } else {
         prev.push({ key: cur.key, data: cur.input });
       }

@@ -8,7 +8,11 @@ block body
       Button(href='{{MAIN_LINK}}') {{MAIN_ACTION}}
 
   Section
-    {{#SOME_LIST}}
-    Column
+    {{#IS_ENABLED}}
+    Column(width='100%')
       Text {{ITS_VALUE}}
-    {{/SOME_LIST}}
+    {{/IS_ENABLED}}
+    {{^IS_ENABLED}}
+    Column(width='100%')
+      Text IT IS OK :)
+    {{/IS_ENABLED}}
