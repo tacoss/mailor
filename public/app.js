@@ -43,7 +43,6 @@ async function main() {
 
   let target;
   let curVars;
-  let lastLink;
   let lastOption;
   let currentMode;
 
@@ -165,9 +164,11 @@ async function main() {
     lastOption = node;
   }
 
-  function showMe(e, name) {
+  function showMe(e) {
+    const name = e.target.options[e.target.options.selectedIndex].value;
+
+    location.hash = name;
     curVars = input(vars[name]);
-    lastLink = untoggle(e, lastLink);
     edit();
   }
 
@@ -208,15 +209,13 @@ async function main() {
   }
 
   mount('#list', ['.pad', [
-    ['h3', 'Available templates:'],
-    ['ul', data.map(x => ['li', [
-      ['a', { href: `#${x}`, onclick: e => showMe(e, x) }, titleCase(x)],
-    ]])],
+    ['label', 'Available templates:'],
+    ['select', { onchange: showMe }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
   ]], $);
 
   mount('#opts', ['ul.pad.flex', [
     ['li', [
-      ['input', { type: 'email', oninput: setMail }],
+      ['input', { type: 'email', required: true, oninput: setMail }],
       ['button', { disabled: true, onclick: sendMail, oncreate: setRef('email') }, 'Send'],
     ]],
     ['li', [['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview']]],
@@ -228,16 +227,12 @@ async function main() {
 
   if (location.hash) {
     renderDocument();
-    lastLink = untoggle({
-      target: document.querySelector(`a[href*="#${location.hash.split('#')[1]}"]`),
-    }, lastLink);
   }
 
-  window.addEventListener('hashchange', () => {
+  addEventListener('hashchange', () => {
     if (location.hash) {
       renderDocument();
     } else {
-      lastLink = untoggle(null, lastLink);
       mainEl.src = 'about:blank';
     }
   }, false);

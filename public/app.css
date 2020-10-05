@@ -54,13 +54,13 @@ ul {
   grid-template-rows: 2.4em auto;
   grid-template-areas:
     'l o'
-    'l m';
+    'm m';
 }
 
 @media screen and (max-width: 719px) {
   #app {
     grid-template-columns: auto;
-    grid-template-rows: 5em 2.4em auto;
+    grid-template-rows: 2.5em 2.5em auto;
     grid-template-areas:
     'l'
     'o'
@@ -99,22 +99,8 @@ ul {
 #toggle:checked ~ #input { display: flex; }
 #toggle:checked ~ #preview { display: none; }
 
-#list li::before {
-  content: '— ';
-}
-
-#list a {
-  text-decoration: none;
-  color: #aaa;
-}
-
-#list a:hover {
-  text-decoration: underline;
-}
-
-#list a.active {
-  color: black;
-  font-weight: bold;
+#list select {
+  margin-left: 10px;
 }
 
 #opts ul {
