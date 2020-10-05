@@ -82,6 +82,18 @@ Try adding --no-build (-B) for faster startups during development
 
 `;
 
+function init() {
+  const tplDir = join(_cwd, argv._[1] || 'templates');
+
+  if (existsSync(tplDir)) {
+    throw new Error(`Directory ${relative(_cwd, tplDir)} already exists`);
+  }
+
+  mkdirSync(tplDir);
+  copySync(join(__dirname, 'template/example.pug'), join(tplDir, 'example.pug'));
+  process.stdout.write(`\rDirectory ${relative(_cwd, tplDir)} created\n`);
+}
+
 async function main() {
   const opts = { ...options, locals: argv.data };
 
@@ -105,15 +117,7 @@ async function main() {
         break;
 
       case 'init':
-        const tplDir = join(_cwd, argv._[1] || 'templates');
-
-        if (existsSync(tplDir)) {
-          throw new Error(`Directory ${relative(_cwd, tplDir)} already exists`);
-        }
-
-        mkdirSync(tplDir);
-        copySync(join(__dirname, 'template/example.pug'), join(tplDir, 'example.pug'));
-        process.stdout.write(`\rDirectory ${relative(_cwd, tplDir)} created\n`);
+        init();
         break;
 
       default:
