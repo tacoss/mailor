@@ -212,8 +212,18 @@ module.exports = async (templates, opts) => {
         delete require.cache[srcFile];
 
         res.setHeader('content-type', 'application/json');
-        res.end(existsSync(opts.jsonfile) ? JSON.stringify(require(srcFile)) : '{}');
-        return;
+
+        if (!existsSync(opts.jsonfile)). {
+          res.end('{}');
+          return;
+        }
+
+        const check = require(srcFile);
+
+        Promise.resolve()
+          .then(() => typeof check === 'function' ? check() : check)
+          .then(result => res.end(JSON.stringify(result)))
+          .catch(e => res.end('{}'));
       }
 
       next();

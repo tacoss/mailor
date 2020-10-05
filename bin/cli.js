@@ -81,6 +81,8 @@ Options:
 
 The init task will create the templates directory if does not already exists
 
+The jsonfile can be also a javascript module, you can return a function to generates your values!
+
 When using the send command you MUST have already started in watch mode, to disable
 the maildev server (if already running) just add --no-server (-S) in your options
 
