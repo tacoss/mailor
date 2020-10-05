@@ -1,4 +1,3 @@
-const nsfw = require('nsfw');
 const glob = require('glob');
 
 const {
@@ -102,8 +101,15 @@ module.exports = async (templates, opts) => {
 
   process.stdout.write(`\rWatching: ${sources.map(x => relative(opts.cwd, x)).join(', ')}\n`);
 
+  let nsfw;
+  try {
+    nsfw = require('nsfw');
+  } catch (e) {
+    // do nothing
+  }
+
   const watchers = await Promise.all(sources.map(baseDir => {
-    return nsfw(baseDir, evts => {
+    return nsfw && nsfw(baseDir, evts => {
       evts.forEach(evt => {
         const filename = evt.newFile || evt.file;
         const fullpath = join(evt.newDirectory || evt.directory, filename);
@@ -133,7 +139,7 @@ module.exports = async (templates, opts) => {
         }
       });
     }).then(watcher => {
-      watcher.start();
+      if (watcher) watcher.start();
       return watcher;
     });
   }));
@@ -141,7 +147,7 @@ module.exports = async (templates, opts) => {
   const liveServer = require('live-server');
 
   const publicDir = resolve(__dirname, '../public');
-  const devPort = opts.port || 1081;
+  const devPort = opts.port || process.env.PORT || 1081;
 
   const watchingDirs = [opts.destDir, publicDir]
     .concat(opts.jsonfile ? opts.jsonfile : []);
@@ -248,7 +254,7 @@ module.exports = async (templates, opts) => {
 
   process.on('exit', () => {
     watchers.forEach(watcher => {
-      watcher.stop();
+      if (watcher) watcher.stop();
     });
 
     liveServer.shutdown();
