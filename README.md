@@ -26,12 +26,15 @@ Now, you can start creating templates using pure `.pug` files:
 **templates/test1.pug**
 ```pug
 mjml
-  mj-body: mj-section
-    mj-column: mj-text
+  Body: Section
+    Column: Text
       h1 It works!
 ```
 
-Build or watch for changes, e.g.
+> Shortcuts for `mj-*` tags are provided as `<Column />` to produce `<mj-column />` respectively
+> &mdash; those _tags_ supports the `class` attribute by default while `mj-*` requires `css-class` instead.
+
+### Build or watch for changes, e.g.
 
 ```bash
 $ mailor watch templates -d generated --no-open
@@ -44,6 +47,29 @@ $ mailor send generated/test1.html
 ```
 
 Open http://localhost:1080 and see how it looks!
+
+### LESS.js support
+
+You can pre-process and embed the resulting stylesheet through LESS, e.g.
+
+```pug
+mjml
+  Head
+    Style(src='_your_stylesheets.less')
+```
+
+> The `src` attribute used here is non MJML standard, so `mj-style` won't work the same way
+> &mdash; also, if your file is not `.less` then it'll be embedded without changes.
+
+### Including files
+
+By default all files or directories starting with `_` are ignored by the compiler, e.g.
+
+```pug
+mjml
+  Head
+    include _/header
+```
 
 ## API
 
