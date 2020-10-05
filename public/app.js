@@ -25,7 +25,7 @@ async function get(url) {
   try {
     data = await resp.json();
   } catch (e) {
-    alert(`Failed to resolve ${url} (${e.message})`);
+    alert(`Failed to resolve ${url} (${e.message})`); // eslint-disable-line
     data = {};
   }
 
@@ -124,7 +124,7 @@ async function main() {
               setValue(item.key, '');
             },
           }, '×'],
-        ]]
+        ]],
       ]],
     ]])],
   ]];
@@ -155,6 +155,16 @@ async function main() {
 
     curVars = input(vars[key]);
     edit();
+  }
+
+  function setRef(name) {
+    return e => {
+      refs[name] = e;
+    };
+  }
+
+  function getRef(name) {
+    return refs[name];
   }
 
   function untoggle(e, node) {
@@ -198,16 +208,6 @@ async function main() {
   function setMode(e) {
     currentMode = modes.findIndex(x => x === parseInt(e.target.value, 10));
     resize();
-  }
-
-  function setRef(name) {
-    return e => {
-      refs[name] = e;
-    };
-  }
-
-  function getRef(name) {
-    return refs[name];
   }
 
   function sendMail() {

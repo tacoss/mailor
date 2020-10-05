@@ -6,7 +6,7 @@ const {
 } = require('fs');
 
 const {
-  join, resolve, relative, basename, dirname,
+  join, resolve, relative, basename,
 } = require('path');
 
 const Mailer = require('../lib/mailer');
