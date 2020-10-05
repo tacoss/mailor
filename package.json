@@ -32,9 +32,20 @@
     "templates",
     "preview",
     "maildev",
-    "mailer"
+    "mailer",
+    "mjml"
   ],
-  "author": "Alvaro Cabrera <pateketrueke@gmail.com> (https://soypache.co)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tacoss/mailor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tacoss/mailor/issues"
+  },
+  "author": {
+    "name": "Alvaro Cabrera",
+    "email": "pateketrueke@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^9.0.1",
