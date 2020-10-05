@@ -1,6 +1,6 @@
 const argv = require('wargs')(process.argv.slice(2), {
   boolean: ['V', 'o', 'O', 'B', 'S', 'relay-secure'],
-  string: ['p', 'd', 't', 's', 'a', 'f', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
+  string: ['p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
@@ -9,6 +9,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     t: 'timeout',
     s: 'subject',
     a: 'address',
+    j: 'jsonfile',
     f: 'filename',
     O: 'no-open',
     B: 'no-build',
@@ -42,6 +43,7 @@ const options = {
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,
+  jsonfile: argv.flags.jsonfile,
   filename: argv.flags.filename,
   relayOptions: {
     to: argv.flags.relayTo,
@@ -71,6 +73,7 @@ Options:
   -t, --timeout    # Destination for generated templates
   -s, --subject    # Subject for the message sent
   -a, --address    # Used address for sending e-mails
+  -j, --jsonfile   # JSON file with default placeholders
   -f, --filename   # Used when sending emails from a directory
 
 The init task will create the templates directory if does not already exists
@@ -83,15 +86,19 @@ Try adding --no-build (-B) for faster startups during development
 `;
 
 function init() {
-  const tplDir = join(_cwd, argv._[1] || 'templates');
+  const tplDir = join(_cwd, argv._[1] || 'mailer');
+  const baseDir = relative(_cwd, tplDir);
 
   if (existsSync(tplDir)) {
     throw new Error(`Directory ${relative(_cwd, tplDir)} already exists`);
   }
 
   mkdirSync(tplDir);
-  copySync(join(__dirname, 'template/example.pug'), join(tplDir, 'example.pug'));
-  process.stdout.write(`\rDirectory ${relative(_cwd, tplDir)} created\n`);
+  copySync(join(__dirname, 'example'), tplDir);
+
+  process.stdout.write(`\rDirectory ${baseDir} created\n`);
+  process.stdout.write(`\rExecute the following command to start watching:\n`);
+  process.stdout.write(`\r  ${thisBin} watch ${baseDir}/templates -j ${baseDir}/defaults.json -d ${baseDir}/generated\n`);
 }
 
 async function main() {

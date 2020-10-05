@@ -76,6 +76,7 @@ module.exports = async (templates, opts) => {
 
   const liveServer = require('live-server');
 
+  const publicDir = resolve(__dirname, '../public');
   const devPort = opts.port || 1081;
 
   let maildev;
@@ -83,10 +84,10 @@ module.exports = async (templates, opts) => {
   liveServer.start({
     logLevel: 0,
     port: devPort,
-    watch: opts.destDir,
+    root: publicDir,
+    watch: [opts.destDir, publicDir].concat(opts.jsonfile ? opts.jsonfile : []),
     open: opts.open !== false,
     ignore: 'generated_templates',
-    root: resolve(__dirname, '../public'),
     mount: [
       ['/vendor', resolve(__dirname, '../dist')],
     ],
@@ -147,9 +148,16 @@ module.exports = async (templates, opts) => {
       if (req.url === '/templates.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(templates.map(x => basename(x, '.pug'))));
-      } else {
-        next();
+        return;
       }
+
+      if (req.url === '/defaults.json') {
+        res.setHeader('content-type', 'application/json');
+        res.end(existsSync(opts.jsonfile) ? readFileSync(opts.jsonfile) : '{}');
+        return;
+      }
+
+      next();
     }],
   });
 

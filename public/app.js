@@ -20,7 +20,14 @@ function titleCase(text) {
 
 async function get(url) {
   const resp = await fetch(url);
-  const data = await resp.json();
+
+  let data;
+  try {
+    data = await resp.json();
+  } catch (e) {
+    alert(`Failed to resolve ${url} (${e.message})`);
+    data = {};
+  }
 
   return data;
 }
@@ -40,6 +47,7 @@ async function post(url, data) {
 async function main() {
   const data = await get('/templates.json');
   const vars = await get('/variables.json');
+  const defs = await get('/defaults.json');
 
   let target;
   let curVars;
@@ -55,8 +63,9 @@ async function main() {
   }
 
   function getLocals() {
+    console.log(defs);
     return curVars.reduce((prev, cur) => {
-      prev[cur.key] = cur.value || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
+      prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
       return prev;
     }, {});
   }
@@ -95,33 +104,34 @@ async function main() {
   };
 
   const $view = state => ['div', [
+    !state.items.length && ['p', 'No variables found'],
     ['ul', state.items.map(item => ['li', [
       ['label', [
-        ['span', item.key],
-        ['textarea', {
-          name: item.key,
-          rows: 2,
-          oncreate(e) {
-            item.ref = e;
-          },
-          onchange(e) {
-            setValue(item.key, e.target.value);
-          },
-        }],
-        ['button', {
-          onclick() {
-            item.ref.value = '';
-            setValue(item.key, '');
-          },
-        }, '×'],
+        item.key,
+        ['span.flex', [
+          ['textarea', {
+            name: item.key,
+            rows: 2,
+            oncreate(e) {
+              item.ref = e;
+            },
+            onchange(e) {
+              setValue(item.key, e.target.value);
+            },
+          }],
+          ['button', {
+            onclick() {
+              item.ref.value = '';
+              setValue(item.key, '');
+            },
+          }, '×'],
+        ]]
       ]],
-    ]]).concat(!state.items.length ? [['li', 'No variables found']] : [])],
+    ]])],
   ]];
 
   const editor = view($view, $state, $actions);
-  const tag = bind(render, listeners());
-
-  const $$ = editor('#input', tag);
+  const $$ = editor('#input', $);
   const refs = {};
 
   function edit() {
@@ -174,12 +184,14 @@ async function main() {
 
   function showData(e) {
     e.preventDefault();
+    getRef('resize').disabled = true;
     lastOption = untoggle(e, lastOption);
     toggleEl.checked = true;
   }
 
   function showPreview(e) {
     e.preventDefault();
+    getRef('resize').disabled = false;
     lastOption = untoggle(e, lastOption);
     toggleEl.checked = false;
   }
@@ -208,22 +220,29 @@ async function main() {
     getRef('email').disabled = !target;
   }
 
-  mount('#list', ['.pad', [
-    ['label', 'Available templates:'],
-    ['select', { onchange: showMe }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
+  mount('#list', ['.pad.flex.center', [
+    ['h1', [['a', { href: '/' }, 'Mailor']]],
+    ['label', [
+      'Available templates:',
+      ['select.group', { onchange: showMe }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
+    ]],
   ]], $);
 
-  mount('#opts', ['ul.pad.flex', [
-    ['li', [
+  const OptionList = ['ul.pad.flex.center', [
+    ['li.flex.group', [
       ['input', { type: 'email', required: true, oninput: setMail }],
       ['button', { disabled: true, onclick: sendMail, oncreate: setRef('email') }, 'Send'],
     ]],
-    ['li', [['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview']]],
-    ['li', [['a', { href: '#', onclick: showData }, 'Data']]],
-    ['li', [
-      ['select', { onchange: setMode }, modes.map(x => ['option', `${x}px`])],
+    ['li.flex.group', [
+      ['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview'],
+      ['a', { href: '#', onclick: showData }, 'Input'],
     ]],
-  ]], $);
+    ['li.group', [
+      ['select', { onchange: setMode, oncreate: setRef('resize') }, modes.map(x => ['option', `${x}px`])],
+    ]],
+  ]];
+
+  mount('#opts', ['form', { onsubmit: e => e.preventDefault() }, [OptionList]], $);
 
   if (location.hash) {
     renderDocument();
