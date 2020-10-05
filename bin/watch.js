@@ -6,7 +6,7 @@ const {
 } = require('fs');
 
 const {
-  join, resolve, relative, basename,
+  join, resolve, relative, basename, dirname,
 } = require('path');
 
 const Mailer = require('../lib/mailer');
@@ -71,6 +71,14 @@ module.exports = async (templates, opts) => {
       process.stderr.write(`\x1b[31m${e.message}\x1b[0m\n`);
     }
   }
+
+  templates = templates.filter(cur => {
+    if (cur.includes('.pug')
+      && basename(cur).charAt() !== '_'
+      && dirname(cur).charAt() !== '_'
+    ) return true;
+    return false;
+  });
 
   if (opts.build !== false) {
     await run(templates);

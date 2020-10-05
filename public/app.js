@@ -88,9 +88,13 @@ async function main() {
       document.title = `${title} (${titleCase(getId())} - ${mainEl.contentDocument.title || 'Untitled'})`;
     };
 
-    mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
+    if (data.indexOf(getId()) === -1) {
+      location.hash = Object.keys(vars)[0];
+    } else {
+      mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
 
-    resize();
+      resize();
+    }
   }
 
   function setValue(item, value) {
@@ -194,14 +198,18 @@ async function main() {
   }
 
   function input(args) {
-    const defaults = args.input.reduce((prev, cur) => {
-      if (!cur.input.length) {
-        prev.push({ key: cur.key, bool: cur.falsy });
-      } else {
-        prev.push({ key: cur.key, data: cur.input });
-      }
-      return prev;
-    }, []);
+    let defaults = [];
+
+    if (args && args.input) {
+      defaults = args.input.reduce((prev, cur) => {
+         if (!cur.input.length) {
+           prev.push({ key: cur.key, bool: cur.falsy });
+         } else {
+           prev.push({ key: cur.key, data: cur.input });
+         }
+         return prev;
+       }, []);
+    }
 
     return defaults;
   }
