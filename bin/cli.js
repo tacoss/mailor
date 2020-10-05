@@ -112,7 +112,7 @@ async function main() {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write('\rLoading templates...\r');
+          process.stdout.write('\r\x1b[KLoading templates...\r');
         });
 
         await require(`./${action}`)(options.srcDir.reduce((prev, cur) => prev.concat(glob.sync(`${cur}/*.pug`)), []), opts);

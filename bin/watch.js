@@ -162,8 +162,12 @@ module.exports = async (templates, opts) => {
       }
 
       if (req.url === '/defaults.json') {
+        const srcFile = resolve(opts.jsonfile);
+
+        delete require.cache[srcFile];
+
         res.setHeader('content-type', 'application/json');
-        res.end(existsSync(opts.jsonfile) ? readFileSync(opts.jsonfile) : '{}');
+        res.end(existsSync(opts.jsonfile) ? JSON.stringify(require(srcFile)) : '{}');
         return;
       }
 
