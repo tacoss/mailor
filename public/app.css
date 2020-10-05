@@ -50,7 +50,7 @@ ul {
 #app {
   height: 100vh;
   display: grid;
-  grid-template-columns: 260px auto;
+  grid-template-columns: auto;
   grid-template-rows: 2.4em auto;
   grid-template-areas:
     'l o'
