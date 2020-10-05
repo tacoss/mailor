@@ -202,13 +202,13 @@ async function main() {
 
     if (args && args.input) {
       defaults = args.input.reduce((prev, cur) => {
-         if (!cur.input.length) {
-           prev.push({ key: cur.key, bool: cur.falsy });
-         } else {
-           prev.push({ key: cur.key, data: cur.input });
-         }
-         return prev;
-       }, []);
+        if (!cur.input.length) {
+          prev.push({ key: cur.key, bool: cur.falsy });
+        } else {
+          prev.push({ key: cur.key, data: cur.input });
+        }
+        return prev;
+      }, []);
     }
 
     return defaults;
