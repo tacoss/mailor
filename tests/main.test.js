@@ -238,7 +238,7 @@ describe('integration', () => {
           stdMocks.restore();
           ok();
 
-          const { stdout, stderr } = stdMocks.flush();
+          const { stdout } = stdMocks.flush();
 
           expect(stdout[0]).to.contains('Error: Parsing failed');
         }, 500);

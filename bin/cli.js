@@ -97,7 +97,7 @@ function init() {
   copySync(join(__dirname, 'example'), tplDir);
 
   process.stdout.write(`\rDirectory ${baseDir} created\n`);
-  process.stdout.write(`\rExecute the following command to start watching:\n`);
+  process.stdout.write('\rExecute the following command to start watching:\n');
   process.stdout.write(`\r  ${thisBin} watch ${baseDir}/templates -j ${baseDir}/defaults.json -d ${baseDir}/generated\n`);
 }
 
