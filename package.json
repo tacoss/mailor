@@ -10,7 +10,7 @@
     "build": "mkdir -p dist && cp node_modules/somedom/dist/somedom.umd.js dist/",
     "lint": "eslint bin lib tests public",
     "pretest": "npm run lint",
-    "start": "mailor watch bin/example/templates -w bin/example/partials -j bin/example/defaults.json -d dist/generated",
+    "start": "bin/cli watch bin/example/templates -w bin/example/partials -j bin/example/defaults.json -d dist/generated",
     "mocha": "NODE_ENV=test _mocha --timeout 5000 --exit --recursive -bR spec",
     "test": "npm run test:unit --",
     "test:ci": "npm run coverage && npm run report -- -r lcov",
