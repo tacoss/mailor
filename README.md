@@ -46,7 +46,7 @@ Once built, try sending it through the local SMTP, e.g.
 $ mailor send generated/test1.html
 ```
 
-Open http://localhost:1080 and see how it looks!
+Open http://localhost:1081 and see how it looks!
 
 ### LESS.js support
 
