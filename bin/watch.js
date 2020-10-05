@@ -213,7 +213,7 @@ module.exports = async (templates, opts) => {
 
         res.setHeader('content-type', 'application/json');
 
-        if (!existsSync(opts.jsonfile)). {
+        if (!existsSync(opts.jsonfile)) {
           res.end('{}');
           return;
         }
@@ -221,9 +221,9 @@ module.exports = async (templates, opts) => {
         const check = require(srcFile);
 
         Promise.resolve()
-          .then(() => typeof check === 'function' ? check() : check)
+          .then(() => (typeof check === 'function' ? check() : check))
           .then(result => res.end(JSON.stringify(result)))
-          .catch(e => res.end('{}'));
+          .catch(() => res.end('{}'));
       }
 
       next();
