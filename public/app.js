@@ -63,7 +63,6 @@ async function main() {
   }
 
   function getLocals() {
-    console.log(defs);
     return curVars.reduce((prev, cur) => {
       prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.replace(/[a-z](?=[A-Z])/g, '$&_').toUpperCase()}]`;
       return prev;
@@ -217,7 +216,7 @@ async function main() {
 
   function setMail(e) {
     target = e.target.value;
-    getRef('email').disabled = !target;
+    getRef('email').disabled = !e.target.validity.valid;
   }
 
   mount('#list', ['.pad.flex.center', [

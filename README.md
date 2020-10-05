@@ -4,6 +4,8 @@
 
 <div align="center">
 
+<img src="inbox.svg" width="250" height="250" />
+
 [![Build Status](https://api.travis-ci.org/tacoss/mailor.svg?branch=master)](https://travis-ci.org/tacoss/mailor)
 [![NPM version](https://badge.fury.io/js/mailor.svg)](http://badge.fury.io/js/mailor)
 [![Coverage Status](https://codecov.io/github/tacoss/mailor/coverage.svg?branch=master)](https://codecov.io/github/tacoss/mailor)
