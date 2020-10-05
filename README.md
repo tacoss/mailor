@@ -71,6 +71,22 @@ mjml
     include _/header
 ```
 
+### Live preview
+
+<table>
+  <tr><td>
+    <img src="public/preview.png" alt="Preview panel" width="300" height="508" />
+  </td><td>
+    <img src="public/input.png" alt="Input panel" width="300" height="508" />
+  </td></tr>
+</table>
+
+The included live-preview app allows you to watch your generated templates,
+input variables are extracted directly from your templates so you can test with real data.
+
+> You can leverage on the `jsonfile` option to setup default variables too
+> &mdash; notice that on Mustache some values can be objects, arrays or functions.
+
 ## API
 
 By default `maildev` is enabled when watch mode is used.
