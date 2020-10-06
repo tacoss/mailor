@@ -5,6 +5,7 @@ const tempfile = require('tempfile');
 const td = require('testdouble');
 const stdMocks = require('std-mocks');
 const stdinMock = require('mock-stdin');
+const { fetchTags } = require('../bin/util');
 
 /* global beforeEach, afterEach, describe, it */
 
@@ -39,6 +40,32 @@ describe('Mailor', () => {
   it('should validate input', () => {
     expect(() => Mailor.buildMailer(undefined, { transport: true })).to.throw(/Invalid directory/);
     expect(typeof Mailor.buildMailer(path.join(__dirname, 'fixtures'), { transport: true }).template).to.eql('function');
+  });
+
+  describe('fetchTags', () => {
+    it('should extract variables from mustache tags', () => {
+      expect(fetchTags('{{x}}{{#o}}{{ p }}{{/o}}{{^m}}n{{/m}}').input).to.eql([
+        { key: 'o', falsy: false, input: [{ key: 'p', input: [] }] },
+        { key: 'm', falsy: true, input: [] },
+        { key: 'x', input: [] },
+      ]);
+    });
+
+    it('should extract variables from handlebars tags', () => {
+      expect(fetchTags('{{x}}{{#each o}}{{ p }}{{/each}}{{^unless m}}n{{/unless}}').input).to.eql([
+        { key: 'o', falsy: false, input: [{ key: 'p', input: [] }] },
+        { key: 'm', falsy: true, input: [] },
+        { key: 'x', input: [] },
+      ]);
+    });
+
+    it('should extract variables from liquidjs tags', () => {
+      expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
+        { key: 'm', falsy: false, input: [{ key: 'o', input: [] }] },
+        { key: 'foo', falsy: false, input: [] },
+        { key: 'x', input: [] },
+      ]);
+    });
   });
 
   describe('_sendMail', () => {
@@ -83,7 +110,7 @@ describe('Mailor', () => {
 
     it('should render mustache from given body', async () => {
       td.replace(Mailor, 'render', td.func('render'));
-      td.when(Mailor.render(template, td.matchers.isA(Object))).thenReturn('OK');
+      td.when(Mailor.render(template, td.matchers.isA(Object))).thenResolve('OK');
 
       const result = await mailer.sendMail({
         template, data, email, subject,

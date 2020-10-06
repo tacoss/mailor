@@ -1,11 +1,12 @@
 const argv = require('wargs')(process.argv.slice(2), {
   boolean: ['V', 'o', 'O', 'B', 'S', 'relay-secure'],
-  string: ['w', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
+  string: ['e', 'w', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
     d: 'dest',
     w: 'watch',
+    e: 'engine',
     V: 'verbose',
     t: 'timeout',
     s: 'subject',
@@ -42,6 +43,7 @@ const options = {
   build: argv.flags.build,
   watch: argv.flags.watch,
   server: argv.flags.server,
+  engine: argv.flags.engine,
   timeout: argv.flags.timeout,
   subject: argv.flags.subject,
   address: argv.flags.address,
@@ -73,6 +75,7 @@ Options:
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
   -w, --watch      # Additional directories to watch for changes
+  -e, --engine     # Use handlebars or liquidjs, default is mustache
   -t, --timeout    # Destination for generated templates
   -s, --subject    # Subject for the message sent
   -a, --address    # Used address for sending e-mails
@@ -109,12 +112,16 @@ function init() {
 async function main() {
   const opts = { ...options, locals: argv.data };
 
+  if (opts.engine) {
+    require('../lib/mailer').setEngine(opts.engine);
+  }
+
   try {
     switch (action) {
       case 'build':
       case 'watch':
         process.nextTick(() => {
-          process.stdout.write('\r\x1b[KLoading templates...\r');
+          process.stdout.write(`\r\x1b[KLoading ${opts.engine || 'mustache'} templates...\r`);
         });
 
         await require(`./${action}`)(options.srcDir.reduce((prev, cur) => prev.concat(glob.sync(`${cur}/*.pug`)), []), opts);
