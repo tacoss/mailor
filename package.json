@@ -1,6 +1,6 @@
 {
   "name": "mailor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Mailer tools",
   "main": "lib/mailer.js",
   "bin": {
@@ -12,8 +12,8 @@
     "pretest": "npm run lint",
     "prestart": "npm run build && npm run dist",
     "mailor": "bin/cli ${MAILOR_TASK:-watch} example/templates -w example/partials -j example/defaults.json -d dist/generated",
-    "start":  "npm run mailor",
-    "build":  "MAILOR_TASK=build npm run mailor",
+    "start": "npm run mailor",
+    "build": "MAILOR_TASK=build npm run mailor",
     "mocha": "NODE_ENV=test _mocha --timeout 5000 --exit --recursive -bR spec",
     "test": "npm run test:unit --",
     "test:ci": "npm run coverage && npm run report -- -r lcov",
