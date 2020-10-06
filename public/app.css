@@ -11,6 +11,7 @@ body {
   background-color: #DFDBE5;
   background-image: url(shape.svg);
   font-family: Helvetica, Arial;
+  overflow: hidden;
   font-size: 90%;
 }
 
