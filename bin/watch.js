@@ -156,6 +156,7 @@ module.exports = async (templates, opts) => {
 
   liveServer.start({
     logLevel: 0,
+    cors: true,
     port: devPort,
     root: publicDir,
     watch: watchingDirs,
@@ -197,10 +198,28 @@ module.exports = async (templates, opts) => {
           address: parts.join(','),
           locals: data,
         }).then(() => {
-          res.end('Email was successfully sent');
+          res.end(`Email was successfully sent to: ${parts.join(', ')}`);
         }).catch(e => {
           res.end(e.message);
         });
+        return;
+      }
+
+      if (req.url.indexOf('/recipients.json') === 0) {
+        if (req.method === 'DELETE') {
+          const emailId = req.url.split('?')[1];
+
+          if (emailId) {
+            maildev.deleteEmail(emailId, () => res.end(`The email ${emailId} was deleted`));
+          } else {
+            maildev.deleteAllEmail(() => res.end('All email was deleted successfully'));
+          }
+        } else {
+          res.setHeader('content-type', 'application/json');
+          maildev.getAllEmail((err, emails) => {
+            res.end(JSON.stringify(emails.reverse()));
+          });
+        }
         return;
       }
 
