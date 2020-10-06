@@ -8,11 +8,14 @@ block body
       Button(href='{{MAIN_LINK}}') {{MAIN_ACTION}}
 
   Section
-    {{#IS_ENABLED}}
+    {{#with IS_ENABLED}}
     Column(width='100%')
       Text {{ITS_VALUE}}
-    {{/IS_ENABLED}}
-    {{^IS_ENABLED}}
+    {{/with}}
+    {{#unless IS_ENABLED}}
     Column(width='100%')
       Text.highlight IT IS OK :)
-    {{/IS_ENABLED}}
+    {{/unless}}
+    {{#each DATASET}}
+      Column: Text {{KEY}}: {{VALUE}}
+    {{/each}}

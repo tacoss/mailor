@@ -18,6 +18,58 @@ function titleCase(text) {
   return text[0].toUpperCase() + text.substr(1).replace(/-([a-z])/g, (_, k) => ` ${k.toUpperCase()}`);
 }
 
+function clone(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(x => clone(x));
+  return Object.keys(obj).reduce((memo, key) => Object.assign(memo, { [key]: clone(obj[key]) }), {});
+}
+
+function List(el, Self, result, callback) {
+  function getValue(offset) {
+    return {
+      list: true,
+      key: offset,
+      data: clone(result)[0],
+    };
+  }
+
+  function rmValue(e, item, actions) {
+    e.target.blur();
+    actions.remove(item.key);
+  }
+
+  const $actions = {
+    update: value => () => ({
+      items: value,
+    }),
+    append: value => ({ items }) => ({
+      items: items.concat(value),
+    }),
+    remove: value => ({ items }) => ({
+      items: items.filter(x => x.key !== value),
+    }),
+  };
+
+  const $state = {
+    items: [getValue(0)],
+  };
+
+  const $view = ({ items } , actions) => ['div', [
+    ['ul', items.map(item => ['li', [
+      Self(item.data),
+      item.key > 0 && ['button', { onclick: e => rmValue(e, item, actions) }, 'Remove'],
+    ]])],
+    ['button', { onclick: () => actions.append(getValue(items.length)) }, 'Append'],
+  ]];
+
+  const View = view($view, $state, $actions);
+  const $$ = View(el, $);
+
+  $$.subscribe(callback);
+
+  return $$;
+}
+
 async function get(url) {
   const resp = await fetch(url);
 
@@ -67,21 +119,21 @@ async function main() {
     return location.hash.split('#')[1];
   }
 
-  function getLocals(source) {
-    return source.reduce((prev, cur) => {
-      const fixedKey = cur.key
-        .replace(/^[#^]/, '')
-        .replace(/[a-z](?=[A-Z])/g, '$&_');
+  function getLocals(source, target) {
+    if (Array.isArray(source[0])) {
+      return source.map(x => getLocals(x));
+    }
 
-      if (cur.data) {
-        prev[fixedKey] = cur.value ? getLocals(cur.data) : null;
+    return source.reduce((prev, cur) => {
+      if (cur.list || cur.data) {
+        if (cur.value) prev[cur.key] = getLocals(cur.data);
       } else if (typeof cur.bool !== 'undefined') {
-        prev[fixedKey] = cur.value;
+        prev[cur.key] = cur.value;
       } else if (cur.value !== false) {
-        prev[fixedKey] = cur.value || defs[fixedKey] || `[${fixedKey.toUpperCase()}]`;
+        prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.toUpperCase()}]`;
       }
       return prev;
-    }, {});
+    }, target || {});
   }
 
   function getQueryParams() {
@@ -109,7 +161,7 @@ async function main() {
 
   const $actions = {
     update: value => () => ({
-      items: value.slice(),
+      items: value,
     }),
   };
 
@@ -144,7 +196,7 @@ async function main() {
           Radio(item, 'off', 'OFF', true),
           Radio(item, 'on', 'ON'),
         ]],
-        Self(item.data),
+        Self(item.data, item.list),
       ]];
     }
 
@@ -182,7 +234,17 @@ async function main() {
     ]];
   }
 
-  function Data(items) {
+  function Data(items, repeated) {
+    if (repeated) {
+      return ['fieldset', {
+        oncreate: el => new List(el, Data, items, result => {
+          result.items.forEach(item => { items[item.key] = item.data; });
+          items.length = result.items.length;
+          renderDocument();
+        }),
+      }];
+    }
+
     return ['ul', items.map(item => ['li', [
       ['label', { for: item.key }, item.key],
       Value(item, Data),
@@ -210,7 +272,7 @@ async function main() {
         if (!cur.input.length) {
           prev.push({ key: cur.key, bool: cur.falsy });
         } else {
-          prev.push({ key: cur.key, data: cur.input });
+          prev.push({ key: cur.key, data: cur.input, list: cur.repeat });
         }
         return prev;
       }, []);

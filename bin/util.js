@@ -50,10 +50,17 @@ function fetchTags(template) {
             ...fetchTags(fixedBody),
           };
 
+          /* istanbul ignore else */
           if (matches[1] === 'for' || matches[2] === 'each') {
             fixedItem.repeat = true;
+
+            /* istanbul ignore else */
+            if (!Array.isArray(fixedItem.input[0])) {
+              fixedItem.input = [fixedItem.input];
+            }
           }
 
+          /* istanbul ignore else */
           if (matches[1].charAt() === '^') {
             fixedItem.falsy = true;
           }

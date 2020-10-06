@@ -18,7 +18,9 @@ body {
 textarea {
   border: 0;
 }
-
+fieldset {
+  border: none;
+}
 ul {
   list-style: none;
 }
@@ -142,10 +144,6 @@ ul {
 .menu li a:hover {
   background-color: #FAFAFA;
   color: gray;
-}
-.menu li button:hover {
-  cursor: pointer;
-  color: red;
 }
 .menu li small {
   display: block;
@@ -274,12 +272,23 @@ a {
   border-left: 1px solid silver;
 }
 
+textarea + button:hover {
+  cursor: pointer;
+  color: red;
+}
+
 input, button, select, textarea {
   font-family: Helvetica, Arial;
   background: transparent;
   position: relative;
   padding: 5px;
   border: none;
+}
+
+ul + button {
+  margin-left: 0 !important;
+  margin-top: 10px;
+  padding: 5px;
 }
 
 select {
@@ -320,9 +329,6 @@ a.active {
   margin-left: 5px;
   cursor: pointer;
 }
-#input button:hover {
-  color: red;
-}
 
 #input li:last-child {
   margin-bottom: 0;
@@ -332,7 +338,9 @@ a.active {
   padding-top: 10px;
   border-top: 1px dashed #C1B0CB;
 }
-
+#input li + li .nested > span {
+  top: 10px;
+}
 #input li > label {
   display: block;
   color: gray;
