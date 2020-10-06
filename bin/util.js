@@ -45,11 +45,20 @@ function fetchTags(template) {
 
         /* istanbul ignore else */
         if (!info.input.find(x => x.key === fixedKey)) {
-          info.input.push({
+          const fixedItem = {
             key: fixedKey,
-            falsy: matches[1].charAt() === '^',
             ...fetchTags(fixedBody),
-          });
+          };
+
+          if (matches[1] === 'for' || matches[2] === 'each') {
+            fixedItem.repeat = true;
+          }
+
+          if (matches[1].charAt() === '^') {
+            fixedItem.falsy = true;
+          }
+
+          info.input.push(fixedItem);
         }
       }
     } while (matches);

@@ -45,7 +45,7 @@ describe('Mailor', () => {
   describe('fetchTags', () => {
     it('should extract variables from mustache tags', () => {
       expect(fetchTags('{{x}}{{#o}}{{ p }}{{/o}}{{^m}}n{{/m}}').input).to.eql([
-        { key: 'o', falsy: false, input: [{ key: 'p', input: [] }] },
+        { key: 'o', input: [{ key: 'p', input: [] }] },
         { key: 'm', falsy: true, input: [] },
         { key: 'x', input: [] },
       ]);
@@ -53,7 +53,7 @@ describe('Mailor', () => {
 
     it('should extract variables from handlebars tags', () => {
       expect(fetchTags('{{x}}{{#each o}}{{ p }}{{/each}}{{^unless m}}n{{/unless}}').input).to.eql([
-        { key: 'o', falsy: false, input: [{ key: 'p', input: [] }] },
+        { key: 'o', repeat: true, input: [{ key: 'p', input: [] }] },
         { key: 'm', falsy: true, input: [] },
         { key: 'x', input: [] },
       ]);
@@ -61,8 +61,8 @@ describe('Mailor', () => {
 
     it('should extract variables from liquidjs tags', () => {
       expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
-        { key: 'm', falsy: false, input: [{ key: 'o', input: [] }] },
-        { key: 'foo', falsy: false, input: [] },
+        { key: 'm', input: [{ key: 'o', input: [] }] },
+        { key: 'foo', repeat: true, input: [] },
         { key: 'x', input: [] },
       ]);
     });
