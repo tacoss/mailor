@@ -1,4 +1,4 @@
-/* global somedom */
+/* global somedom, moment */
 const {
   bind, view, mount, render, listeners, attributes, classes,
 } = somedom;
@@ -32,9 +32,9 @@ async function get(url) {
   return data;
 }
 
-async function post(url, data) {
+async function post(url, data, method) {
   const resp = await fetch(url, {
-    method: 'POST',
+    method: method || 'POST',
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
@@ -53,6 +53,11 @@ async function main() {
   let curVars;
   let lastOption;
   let currentMode;
+  let allRecipients = [];
+
+  async function getMails() {
+    allRecipients = await get('/recipients.json');
+  }
 
   function resize() {
     mainEl.style.width = `${modes[currentMode || 0]}px`;
@@ -168,7 +173,7 @@ async function main() {
           setValue(item, e.target.value);
         },
       }],
-      ['a', {
+      ['button', {
         onclick() {
           item.ref.value = '';
           setValue(item, '');
@@ -278,27 +283,78 @@ async function main() {
     resize();
   }
 
-  function sendMail() {
-    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`).then(alert);
-  }
-
   function setMail(e) {
     target = e.target.value;
     getRef('email').disabled = !e.target.validity.valid;
   }
 
-  mount('#list', ['.pad.flex.center', [
-    ['h1', [['a', { href: '/' }, 'Mailor']]],
+  function debugMessage(text) {
+    getRef('info').textContent = text;
+    getRef('info').classList.add('display');
+    setTimeout(() => {
+      getRef('info').classList.remove('display');
+    }, 1200);
+  }
+
+  function deleteEmail(id) {
+    post(`/recipients.json?${id}`, null, 'DELETE').then(debugMessage).then(sync); // eslint-disable-line
+  }
+
+  const $view2 = state => ['.pad.flex.center', [
+    ['div.menu', [
+      ['h1', [['a.inbox', {
+        href: '//0.0.0.0:1080',
+        target: '_blank',
+        oncreate: setRef('counter'),
+        class: state.items.length > 0 ? '' : 'empty',
+        'data-count': state.items.length,
+      }], ['a', { href: '/' }, 'Mailor']]],
+      ['ul', state.items.map(item => ['li', [
+        ['button', { onclick: () => deleteEmail(item.id) }, '×'],
+        ['a', {
+          href: `//0.0.0.0:1080/#/email/${item.id}`,
+          target: '_blank',
+          title: moment(new Date(item.time)).fromNow(),
+          onclick(e) {
+            e.preventDefault();
+
+            const opts = 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=800';
+            const win = window.open('', item.subject, `${opts},top=${(screen.height - 800) / 2},left=${(screen.width - 600) / 2}`);
+
+            win.document.body.innerHTML = item.html;
+          },
+        }, [['small', `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
+      ]])],
+    ]],
     ['label', [
       'Available templates:',
       ['select.group', { onchange: showMe }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
     ]],
-  ]], $);
+  ]];
+
+  const $state2 = {
+    items: [],
+  };
+
+  const preview = view($view2, $state2, $actions);
+  const $$$ = preview('#list', $);
+
+  async function sync() {
+    await getMails();
+    $$$.update(allRecipients);
+  }
+  setInterval(sync, 60000);
+  sync();
+
+  function sendMail() {
+    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`).then(debugMessage).then(sync);
+  }
 
   const OptionList = ['ul.pad.flex.center', [
     ['li.flex.group', [
       ['input', { type: 'email', required: true, oninput: setMail }],
       ['button', { disabled: true, onclick: sendMail, oncreate: setRef('email') }, 'Send'],
+      ['span.notify', { oncreate: setRef('info') }],
     ]],
     ['li.flex.group', [
       ['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview'],
