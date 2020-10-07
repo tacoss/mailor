@@ -390,15 +390,13 @@ async function main() {
   async function sync() {
     await getMails();
     counter.update(allRecipients);
-    getRef('email').disabled = false;
-    getRef('email').classList.remove('pending');
+    getRef('email').disabled = !getRef('email').validity.valid;
   }
   setInterval(sync, 60000);
   sync();
 
   function sendMail() {
     getRef('email').disabled = true;
-    getRef('email').classList.add('pending');
     post(`/send_template/${getId()}.html?${target},${getQueryParams()}`)
       .then(debugMessage)
       .then(sync);
