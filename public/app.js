@@ -74,7 +74,7 @@ function Toolbar(el, data, onShow, onDelete) {
         'data-count': state.items.length,
       }], ['a', { href: '/' }, 'Mailor']]],
       ['ul', state.items.map(item => ['li', [
-        ['button', { onclick: () => onDelete(item.id) }, '×'],
+        ['button', { onclick: e => e.target.blur() || onDelete(item.id) }, '×'],
         ['a', {
           href: `//0.0.0.0:1080/#/email/${item.id}`,
           target: '_blank',
@@ -390,12 +390,18 @@ async function main() {
   async function sync() {
     await getMails();
     counter.update(allRecipients);
+    getRef('email').disabled = false;
+    getRef('email').classList.remove('pending');
   }
   setInterval(sync, 60000);
   sync();
 
   function sendMail() {
-    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`).then(debugMessage).then(sync);
+    getRef('email').disabled = true;
+    getRef('email').classList.add('pending');
+    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`)
+      .then(debugMessage)
+      .then(sync);
   }
 
   const OptionList = ['ul.pad.flex.center', [
