@@ -9,6 +9,32 @@ const { fetchTags } = require('../bin/util');
 
 /* global beforeEach, afterEach, describe, it */
 
+describe('fetchTags', () => {
+  it('should extract variables from mustache tags', () => {
+    expect(fetchTags('{{x}}{{#o}}{{ p }}{{/o}}{{^m}}n{{/m}}').input).to.eql([
+      { key: 'o', input: [{ key: 'p', input: [] }] },
+      { key: 'm', falsy: true, input: [] },
+      { key: 'x', input: [] },
+    ]);
+  });
+
+  it('should extract variables from handlebars tags', () => {
+    expect(fetchTags('{{x}}{{#each o}}{{ p }}{{/each}}{{^unless m}}n{{/unless}}').input).to.eql([
+      { key: 'o', repeat: true, input: [[{ key: 'p', input: [] }]] },
+      { key: 'm', falsy: true, input: [] },
+      { key: 'x', input: [] },
+    ]);
+  });
+
+  it('should extract variables from liquidjs tags', () => {
+    expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
+      { key: 'm', input: [{ key: 'o', input: [] }] },
+      { key: 'foo', repeat: true, input: [[]] },
+      { key: 'x', input: [] },
+    ]);
+  });
+});
+
 describe('Mailor', () => {
   const Mailor = require('../lib/mailer');
 
@@ -40,32 +66,6 @@ describe('Mailor', () => {
   it('should validate input', () => {
     expect(() => Mailor.buildMailer(undefined, { transport: true })).to.throw(/Invalid directory/);
     expect(typeof Mailor.buildMailer(path.join(__dirname, 'fixtures'), { transport: true }).template).to.eql('function');
-  });
-
-  describe('fetchTags', () => {
-    it('should extract variables from mustache tags', () => {
-      expect(fetchTags('{{x}}{{#o}}{{ p }}{{/o}}{{^m}}n{{/m}}').input).to.eql([
-        { key: 'o', input: [{ key: 'p', input: [] }] },
-        { key: 'm', falsy: true, input: [] },
-        { key: 'x', input: [] },
-      ]);
-    });
-
-    it('should extract variables from handlebars tags', () => {
-      expect(fetchTags('{{x}}{{#each o}}{{ p }}{{/each}}{{^unless m}}n{{/unless}}').input).to.eql([
-        { key: 'o', repeat: true, input: [{ key: 'p', input: [] }] },
-        { key: 'm', falsy: true, input: [] },
-        { key: 'x', input: [] },
-      ]);
-    });
-
-    it('should extract variables from liquidjs tags', () => {
-      expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
-        { key: 'm', input: [{ key: 'o', input: [] }] },
-        { key: 'foo', repeat: true, input: [] },
-        { key: 'x', input: [] },
-      ]);
-    });
   });
 
   describe('_sendMail', () => {
