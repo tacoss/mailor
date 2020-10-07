@@ -27,7 +27,7 @@ describe('fetchTags', () => {
   });
 
   it('should extract variables from liquidjs tags', () => {
-    expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
+    expect(fetchTags('{% if m == "x" %}{{o}}{% endif %}{{ x|caps }}{% for k in foo %}y{{% endfor %}}').input).to.eql([
       { key: 'm', input: [{ key: 'o', input: [] }] },
       { key: 'foo', repeat: true, input: [[]] },
       { key: 'x', input: [] },

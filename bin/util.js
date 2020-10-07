@@ -78,7 +78,7 @@ function fetchTags(template) {
     if (matches) {
       template = template.replace(matches[0], '');
 
-      const fixedKey = matches[1].replace(/^[#^]/, '').trim();
+      const fixedKey = matches[1].replace(/^[#^]|\|.*$/g, '').trim();
 
       /* istanbul ignore else */
       if (!info.input.find(x => x.key === fixedKey)) {
