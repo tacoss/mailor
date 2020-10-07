@@ -191,7 +191,7 @@ module.exports = async (templates, opts) => {
       if (req.url === '/templates.json') {
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify(templates.filter(src => {
-          return basename(src).charAt() !== '_' && dirname(src).charAt() !== '_';
+          return src.includes('.pug') && basename(src).charAt() !== '_' && dirname(src).charAt() !== '_';
         }).map(x => basename(x, '.pug'))));
         return;
       }
