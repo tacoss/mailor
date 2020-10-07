@@ -9,10 +9,50 @@ const $ = bind(render,
   }),
   listeners());
 
+const refs = {};
 const modes = [600, 480, 320];
 const title = document.title;
 const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
+
+function setRef(name) {
+  return e => {
+    refs[name] = e;
+  };
+}
+
+function getRef(name) {
+  return refs[name];
+}
+
+function getInput(args) {
+  let defaults = [];
+
+  if (args && args.input) {
+    defaults = args.input.reduce((prev, cur) => {
+      if (!cur.input.length) {
+        prev.push({ key: cur.key, bool: cur.falsy });
+      } else {
+        prev.push({ key: cur.key, data: cur.input, list: cur.repeat });
+      }
+      return prev;
+    }, []);
+  }
+
+  return defaults;
+}
+
+function untoggle(e, node) {
+  if (node) {
+    node.classList.remove('active');
+  }
+
+  if (e) {
+    e.target.classList.add('active');
+
+    return e.target;
+  }
+}
 
 function titleCase(text) {
   return text[0].toUpperCase() + text.substr(1).replace(/-([a-z])/g, (_, k) => ` ${k.toUpperCase()}`);
@@ -22,6 +62,92 @@ function clone(obj) {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(x => clone(x));
   return Object.keys(obj).reduce((memo, key) => Object.assign(memo, { [key]: clone(obj[key]) }), {});
+}
+
+function Toolbar(el, data, onShow, onDelete) {
+  const $view = state => ['.pad.flex.center', [
+    ['div.menu', [
+      ['h1', [['a.inbox', {
+        href: '//0.0.0.0:1080',
+        target: '_blank',
+        class: state.items.length > 0 ? '' : 'empty',
+        'data-count': state.items.length,
+      }], ['a', { href: '/' }, 'Mailor']]],
+      ['ul', state.items.map(item => ['li', [
+        ['button', { onclick: () => onDelete(item.id) }, '×'],
+        ['a', {
+          href: `//0.0.0.0:1080/#/email/${item.id}`,
+          target: '_blank',
+          title: moment(new Date(item.time)).fromNow(),
+          onclick(e) {
+            e.preventDefault();
+
+            const opts = 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=800';
+            const win = window.open('', item.subject, `${opts},top=${(screen.height - 800) / 2},left=${(screen.width - 600) / 2}`);
+
+            win.document.body.innerHTML = item.html;
+          },
+        }, [['small', `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
+      ]])],
+    ]],
+    ['label', [
+      'Available templates:',
+      ['select.group', { onchange: onShow }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
+    ]],
+  ]];
+
+  const $state = {
+    items: [],
+  };
+
+  const $actions = {
+    update: value => () => ({
+      items: value,
+    }),
+  };
+
+  return view($view, $state, $actions)(el, $);
+}
+
+function Value(item, Self, callback) {
+  if (item.data) {
+    return ['div.nested', [
+      ['label', [
+        'Enabled',
+        ['input', { type: 'checkbox', onchange: e => callback(item, e.target.checked) }],
+      ]],
+      Self(item.data, item.list),
+    ]];
+  }
+
+  if (typeof item.bool !== 'undefined') {
+    return ['div.flex', [
+      ['input', {
+        type: 'checkbox',
+        onchange(e) {
+          callback(item, e.target.checked);
+        },
+      }],
+    ]];
+  }
+
+  return ['div.flex', [
+    ['textarea', {
+      rows: 1,
+      oncreate(e) {
+        item.ref = e;
+      },
+      onchange(e) {
+        callback(item, e.target.value);
+      },
+    }],
+    ['button', {
+      onclick() {
+        item.ref.value = '';
+        callback(item, '');
+      },
+    }, '×'],
+  ]];
 }
 
 function List(el, Self, result, callback) {
@@ -54,7 +180,7 @@ function List(el, Self, result, callback) {
     items: [getValue(0)],
   };
 
-  const $view = ({ items } , actions) => ['div', [
+  const $view = ({ items }, actions) => ['div', [
     ['ul', items.map(item => ['li', [
       Self(item.data),
       item.key > 0 && ['button', { onclick: e => rmValue(e, item, actions) }, 'Remove'],
@@ -68,6 +194,44 @@ function List(el, Self, result, callback) {
   $$.subscribe(callback);
 
   return $$;
+}
+
+function Params(el, onValue, onUpdate) {
+  const $actions = {
+    update: value => () => ({
+      items: value,
+    }),
+  };
+
+  const $state = {
+    items: [],
+  };
+
+  function Data(items, repeated) {
+    if (repeated) {
+      return ['fieldset', {
+        oncreate: _el => new List(_el, Data, items, result => {
+          result.items.forEach(item => { items[item.key] = item.data; });
+          items.length = result.items.length;
+          onUpdate();
+        }),
+      }];
+    }
+
+    return ['ul', items.map(item => ['li', [
+      ['details', [
+        ['summary', item.key],
+        Value(item, Data, onValue),
+      ]],
+    ]])];
+  }
+
+  const $view = state => ['div', [
+    !state.items.length && ['p', 'No variables found'],
+    Data(state.items),
+  ]];
+
+  return view($view, $state, $actions)(el, $);
 }
 
 async function get(url) {
@@ -119,7 +283,7 @@ async function main() {
     return location.hash.split('#')[1];
   }
 
-  function getLocals(source, target) {
+  function getLocals(source, _target) {
     if (Array.isArray(source[0])) {
       return source.map(x => getLocals(x));
     }
@@ -133,7 +297,7 @@ async function main() {
         prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.toUpperCase()}]`;
       }
       return prev;
-    }, target || {});
+    }, _target || {});
   }
 
   function getQueryParams() {
@@ -159,126 +323,10 @@ async function main() {
     renderDocument();
   }
 
-  const $actions = {
-    update: value => () => ({
-      items: value,
-    }),
-  };
+  const paramsEl = new Params('#input', setValue, renderDocument);
 
-  const $state = {
-    items: [],
-  };
-
-  function setItem(item) {
-    return e => {
-      if (e.target.value === 'off') setValue(item, false);
-      if (e.target.value === 'on') setValue(item, true);
-    };
-  }
-
-  function Radio(item, value, label, checked) {
-    return ['label', [
-      ['input', {
-        type: 'radio',
-        name: item.key,
-        onchange: setItem(item),
-        value,
-        checked,
-      }],
-      label || value,
-    ]];
-  }
-
-  function Value(item, Self) {
-    if (item.data) {
-      return ['div.nested', [
-        ['span.group.clean', [
-          Radio(item, 'off', 'OFF', true),
-          Radio(item, 'on', 'ON'),
-        ]],
-        Self(item.data, item.list),
-      ]];
-    }
-
-    if (typeof item.bool !== 'undefined') {
-      return ['div.flex', [
-        ['input', {
-          type: 'checkbox',
-          name: item.key,
-          id: item.key,
-          onchange(e) {
-            setValue(item, e.target.checked);
-          },
-        }],
-      ]];
-    }
-
-    return ['div.flex', [
-      ['textarea', {
-        name: item.key,
-        id: item.key,
-        rows: 2,
-        oncreate(e) {
-          item.ref = e;
-        },
-        onchange(e) {
-          setValue(item, e.target.value);
-        },
-      }],
-      ['button', {
-        onclick() {
-          item.ref.value = '';
-          setValue(item, '');
-        },
-      }, '×'],
-    ]];
-  }
-
-  function Data(items, repeated) {
-    if (repeated) {
-      return ['fieldset', {
-        oncreate: el => new List(el, Data, items, result => {
-          result.items.forEach(item => { items[item.key] = item.data; });
-          items.length = result.items.length;
-          renderDocument();
-        }),
-      }];
-    }
-
-    return ['ul', items.map(item => ['li', [
-      ['label', { for: item.key }, item.key],
-      Value(item, Data),
-    ]])];
-  }
-
-  const $view = state => ['div', [
-    !state.items.length && ['p', 'No variables found'],
-    Data(state.items),
-  ]];
-
-  const editor = view($view, $state, $actions);
-  const $$ = editor('#input', $);
-  const refs = {};
-
-  function edit() {
-    $$.update(curVars);
-  }
-
-  function input(args) {
-    let defaults = [];
-
-    if (args && args.input) {
-      defaults = args.input.reduce((prev, cur) => {
-        if (!cur.input.length) {
-          prev.push({ key: cur.key, bool: cur.falsy });
-        } else {
-          prev.push({ key: cur.key, data: cur.input, list: cur.repeat });
-        }
-        return prev;
-      }, []);
-    }
-
-    return defaults;
+  function syncVars(key) {
+    paramsEl.update(curVars = getInput(vars[key]));
   }
 
   if (Object.keys(vars).length) {
@@ -287,31 +335,7 @@ async function main() {
     if (!location.hash) {
       location.hash = key;
     }
-
-    curVars = input(vars[key]);
-    edit();
-  }
-
-  function setRef(name) {
-    return e => {
-      refs[name] = e;
-    };
-  }
-
-  function getRef(name) {
-    return refs[name];
-  }
-
-  function untoggle(e, node) {
-    if (node) {
-      node.classList.remove('active');
-    }
-
-    if (e) {
-      e.target.classList.add('active');
-
-      return e.target;
-    }
+    syncVars(key);
   }
 
   function pickMe(node) {
@@ -322,8 +346,7 @@ async function main() {
     const name = e.target.options[e.target.options.selectedIndex].value;
 
     location.hash = name;
-    curVars = input(vars[name]);
-    edit();
+    syncVars(name);
   }
 
   function showData(e) {
@@ -362,48 +385,11 @@ async function main() {
     post(`/recipients.json?${id}`, null, 'DELETE').then(debugMessage).then(sync); // eslint-disable-line
   }
 
-  const $view2 = state => ['.pad.flex.center', [
-    ['div.menu', [
-      ['h1', [['a.inbox', {
-        href: '//0.0.0.0:1080',
-        target: '_blank',
-        oncreate: setRef('counter'),
-        class: state.items.length > 0 ? '' : 'empty',
-        'data-count': state.items.length,
-      }], ['a', { href: '/' }, 'Mailor']]],
-      ['ul', state.items.map(item => ['li', [
-        ['button', { onclick: () => deleteEmail(item.id) }, '×'],
-        ['a', {
-          href: `//0.0.0.0:1080/#/email/${item.id}`,
-          target: '_blank',
-          title: moment(new Date(item.time)).fromNow(),
-          onclick(e) {
-            e.preventDefault();
-
-            const opts = 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=800';
-            const win = window.open('', item.subject, `${opts},top=${(screen.height - 800) / 2},left=${(screen.width - 600) / 2}`);
-
-            win.document.body.innerHTML = item.html;
-          },
-        }, [['small', `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
-      ]])],
-    ]],
-    ['label', [
-      'Available templates:',
-      ['select.group', { onchange: showMe }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
-    ]],
-  ]];
-
-  const $state2 = {
-    items: [],
-  };
-
-  const preview = view($view2, $state2, $actions);
-  const $$$ = preview('#list', $);
+  const counter = new Toolbar('#list', data, showMe, deleteEmail);
 
   async function sync() {
     await getMails();
-    $$$.update(allRecipients);
+    counter.update(allRecipients);
   }
   setInterval(sync, 60000);
   sync();

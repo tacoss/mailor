@@ -90,19 +90,23 @@ ul {
 }
 
 .nested {
-  margin-top: 10px;
-  padding-left: 10px;
-  border-left: 1px dashed silver;
+  margin: 5px 0 0 10px;
 }
 .nested > ul + ul {
-  border-top: 1px dashed #C1B0CB;
-  padding-top: 10px;
   margin-top: 10px;
 }
-.nested > span {
+.nested div > ul > li {
+  padding: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+}
+.nested > label {
   position: absolute;
   right: 0;
   top: 0;
+}
+.nested > label input {
+  margin-left: 10px;
+  vertical-align: middle;
 }
 
 .menu {
@@ -289,6 +293,8 @@ ul + button {
   margin-left: 0 !important;
   margin-top: 10px;
   padding: 5px;
+  border: 1px solid silver;
+  border-radius: 5px;
 }
 
 select {
@@ -329,18 +335,19 @@ a.active {
   margin-left: 5px;
   cursor: pointer;
 }
-
+#input summary {
+  cursor: default;
+}
+#input textarea {
+  border-bottom: 1px dashed #C1B0CB;
+}
+#input textarea:focus {
+  border-color: transparent;
+}
 #input li:last-child {
   margin-bottom: 0;
 }
 
-#input li + li {
-  padding-top: 10px;
-  border-top: 1px dashed #C1B0CB;
-}
-#input li + li .nested > span {
-  top: 10px;
-}
 #input li > label {
   display: block;
   color: gray;
