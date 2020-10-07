@@ -5,7 +5,7 @@ const {
 } = require('fs');
 
 const {
-  join, resolve, relative, basename,
+  join, resolve, relative, basename, dirname,
 } = require('path');
 
 const Mailer = require('../lib/mailer');
@@ -190,7 +190,9 @@ module.exports = async (templates, opts) => {
       /* istanbul ignore else */
       if (req.url === '/templates.json') {
         res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify(templates.map(x => basename(x, '.pug'))));
+        res.end(JSON.stringify(templates.filter(src => {
+          return basename(src).charAt() !== '_' && dirname(src).charAt() !== '_';
+        }).map(x => basename(x, '.pug'))));
         return;
       }
 
