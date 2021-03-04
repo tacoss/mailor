@@ -15,6 +15,8 @@ const title = document.title;
 const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
 
+// FIXME: rework into thunks/components?
+
 function setRef(name) {
   return e => {
     refs[name] = e;
@@ -74,7 +76,7 @@ function Toolbar(el, data, onShow, onDelete) {
         'data-count': state.items.length,
       }], ['a', { href: '/' }, 'Mailor']]],
       ['ul', state.items.map(item => ['li', [
-        ['button', { onclick: e => e.target.blur() || onDelete(item.id) }, '×'],
+        ['button', { onclick: () => onDelete(item.id) }, '×'],
         ['a', {
           href: `//0.0.0.0:1080/#/email/${item.id}`,
           target: '_blank',
@@ -159,8 +161,7 @@ function List(el, Self, result, callback) {
     };
   }
 
-  function rmValue(e, item, actions) {
-    e.target.blur();
+  function rmValue(item, actions) {
     actions.remove(item.key);
   }
 
@@ -183,7 +184,7 @@ function List(el, Self, result, callback) {
   const $view = ({ items }, actions) => ['div', [
     ['ul', items.map(item => ['li', [
       Self(item.data),
-      item.key > 0 && ['button', { onclick: e => rmValue(e, item, actions) }, 'Remove'],
+      item.key > 0 && ['button', { onclick: () => rmValue(item, actions) }, 'Remove'],
     ]])],
     ['button', { onclick: () => actions.append(getValue(items.length)) }, 'Append'],
   ]];
