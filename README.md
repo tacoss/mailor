@@ -6,8 +6,8 @@
 
 <img src="public/inbox.svg" width="250" height="250" />
 
-[![Build Status](https://api.travis-ci.org/tacoss/mailor.svg?branch=master)](https://travis-ci.org/tacoss/mailor)
 [![NPM version](https://badge.fury.io/js/mailor.svg)](http://badge.fury.io/js/mailor)
+[![Build status](https://github.com/tacoss/mailor/actions/workflows/testing.yml/badge.svg)](https://github.com/tacoss/mailor/actions)
 [![Coverage Status](https://codecov.io/github/tacoss/mailor/coverage.svg?branch=master)](https://codecov.io/github/tacoss/mailor)
 [![Known Vulnerabilities](https://snyk.io/test/npm/mailor/badge.svg)](https://snyk.io/test/npm/mailor)
 
