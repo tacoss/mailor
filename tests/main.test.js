@@ -1,3 +1,5 @@
+process.env.CI = 'false';
+
 const { expect } = require('chai');
 const fs = require('fs-extra');
 const path = require('path');
@@ -178,7 +180,7 @@ describe('Mailor', () => {
 
         const { stdout } = stdMocks.flush();
 
-        expect(stdout[stdout.length - 1]).to.match(/---> MAIL: "template" N\/A -> user@email.com/);
+        expect(stdout[stdout.length - 1]).to.match(/\[maildev\] "template" N\/A -> user@email.com/);
         expect(emails.length).to.eql(1);
         expect(emails[0].html).to.eql('It works! - Value: \n');
         expect(emails[0].subject).to.eql('template');

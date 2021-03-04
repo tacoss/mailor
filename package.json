@@ -16,7 +16,7 @@
     "start": "npm run dev",
     "build": "MAILOR_TASK=build npm run mailor",
     "mocha": "NODE_ENV=test _mocha --timeout 5000 --exit --recursive -bR spec",
-    "test": "npm run test:unit --",
+    "test": "FORCE_COLOR=1 npm run test:unit --",
     "test:ci": "npm run coverage && npm run report -- -r lcov",
     "test:unit": "npm run mocha -- 'tests/*.test.js'",
     "test:coverage": "npm run coverage && npm run report",
