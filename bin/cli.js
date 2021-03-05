@@ -1,5 +1,5 @@
 const argv = require('wargs')(process.argv.slice(2), {
-  boolean: ['V', 'o', 'O', 'B', 'S', 'relay-secure'],
+  boolean: ['V', 'o', 'O', 'B', 'S', 'T', 'relay-secure'],
   string: ['e', 'w', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
@@ -16,6 +16,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     O: 'no-open',
     B: 'no-build',
     S: 'no-server',
+    T: 'no-format',
   },
 });
 
@@ -49,6 +50,7 @@ const options = {
   address: argv.flags.address,
   jsonfile: argv.flags.jsonfile,
   filename: argv.flags.filename,
+  noFormat: argv.flags.noFormat,
   relayOptions: {
     to: argv.flags.relayTo,
     host: argv.flags.relayHost,
@@ -81,6 +83,7 @@ Options:
   -a, --address    # Used address for sending e-mails
   -j, --jsonfile   # JSON file with default placeholders
   -f, --filename   # Used when sending emails from a directory
+  -T, --no-format  # Output a JSON object instead of formatted info
 
 The init task will create the templates directory if does not already exists
 
