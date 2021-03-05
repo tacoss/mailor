@@ -50,7 +50,7 @@ const options = {
   address: argv.flags.address,
   jsonfile: argv.flags.jsonfile,
   filename: argv.flags.filename,
-  noFormat: argv.flags.noFormat,
+  noFormat: argv.flags.format === false,
   relayOptions: {
     to: argv.flags.relayTo,
     host: argv.flags.relayHost,

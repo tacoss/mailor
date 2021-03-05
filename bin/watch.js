@@ -226,7 +226,7 @@ module.exports = async (templates, opts) => {
 
   /* istanbul ignore else */
   if (opts.server !== false) {
-    maildev = require('../lib/maildev')(opts.relayOptions, opts.format);
+    maildev = require('../lib/maildev')(opts.relayOptions, opts.noFormat);
     maildev.listen();
   }
 
