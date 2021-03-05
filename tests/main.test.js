@@ -180,7 +180,7 @@ describe('Mailor', () => {
 
         const { stdout } = stdMocks.flush();
 
-        expect(stdout[stdout.length - 1]).to.match(/\[maildev\] "template" N\/A -> user@email.com/);
+        expect(stdout[stdout.length - 1]).to.contains('[maildev] template <from:N/A> <to:user@email.com>');
         expect(emails.length).to.eql(1);
         expect(emails[0].html).to.eql('It works! - Value: \n');
         expect(emails[0].subject).to.eql('template');
