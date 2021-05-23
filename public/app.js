@@ -67,15 +67,15 @@ function clone(obj) {
 }
 
 function Toolbar(el, data, onShow, onDelete) {
-  const $view = state => ['.pad.flex.center', [
-    ['div.menu', [
-      ['h1', [['a.inbox', {
+  const $view = state => ['.pad.flex.center', null, [
+    ['div.menu', null, [
+      ['h1', null, [['a.inbox', {
         href: '//0.0.0.0:1080',
         target: '_blank',
         class: state.items.length > 0 ? '' : 'empty',
         'data-count': state.items.length,
       }], ['a', { href: '/' }, 'Mailor']]],
-      ['ul', state.items.map(item => ['li', [
+      ['ul', null, state.items.map(item => ['li', [
         ['button', { onclick: () => onDelete(item.id) }, '×'],
         ['a', {
           href: `//0.0.0.0:1080/#/email/${item.id}`,
@@ -92,7 +92,7 @@ function Toolbar(el, data, onShow, onDelete) {
         }, [['small', `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
       ]])],
     ]],
-    ['label', [
+    ['label', null, [
       'Available templates:',
       ['select.group', { onchange: onShow }, data.map(x => ['option', { value: x, selected: location.hash === `#${x}` }, [titleCase(x)]])],
     ]],
@@ -403,17 +403,17 @@ async function main() {
       .then(sync);
   }
 
-  const OptionList = ['ul.pad.flex.center', [
-    ['li.flex.group', [
+  const OptionList = ['ul.pad.flex.center', null, [
+    ['li.flex.group', null, [
       ['input', { type: 'email', required: true, oninput: setMail }],
       ['button', { disabled: true, onclick: sendMail, oncreate: setRef('email') }, 'Send'],
       ['span.notify', { oncreate: setRef('info') }],
     ]],
-    ['li.flex.group', [
+    ['li.flex.group', null, [
       ['a.active', { href: '#', onclick: showPreview, oncreate: pickMe }, 'Preview'],
       ['a', { href: '#', onclick: showData }, 'Input'],
     ]],
-    ['li.group', [
+    ['li.group', null, [
       ['select', { onchange: setMode, oncreate: setRef('resize') }, modes.map(x => ['option', `${x}px`])],
     ]],
   ]];
