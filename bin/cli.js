@@ -24,6 +24,7 @@ const {
   copySync,
   mkdirSync,
   existsSync,
+  ensureDirSync,
 } = require('fs-extra');
 
 const {
@@ -118,6 +119,8 @@ async function main() {
   if (opts.engine) {
     require('../lib/mailer').setEngine(opts.engine);
   }
+
+  ensureDirSync(opts.destDir);
 
   try {
     switch (action) {
