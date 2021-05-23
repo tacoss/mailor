@@ -38,9 +38,10 @@ module.exports = async (templates, opts) => {
     }, opts.timeout || 200);
   }
 
+  const watching = toArray(opts.watch);
   const sources = opts.srcDir
     .reduce((prev, cur) => prev.concat(cur.includes('*') ? glob.sync(cur) : cur), [])
-    .concat(toArray(opts.watch).map(x => resolve(x)));
+    .concat(watching.map(x => resolve(x)));
 
   process.stdout.write(`\rWatching: ${sources.map(x => relative(opts.cwd, x)).join(', ')}\n`);
 
@@ -62,7 +63,10 @@ module.exports = async (templates, opts) => {
         }
 
         /* istanbul ignore else */
-        if ((!files.includes(src) && type === 'add') || type === 'change') {
+        if (
+          ((!files.includes(src) && type === 'add') || type === 'change')
+          && (!watching.some(dir => src.indexOf(dir) === 0))
+        ) {
           /* istanbul ignore else */
           if (type === 'add') process.stdout.write(`Added ${src}\n`);
           files.push(src);
