@@ -75,7 +75,7 @@ function Toolbar(el, data, onShow, onDelete) {
         class: state.items.length > 0 ? '' : 'empty',
         'data-count': state.items.length,
       }], ['a', { href: '/' }, 'Mailor']]],
-      ['ul', null, state.items.map(item => ['li', [
+      ['ul', null, state.items.map(item => ['li', null, [
         ['button', { onclick: () => onDelete(item.id) }, '×'],
         ['a', {
           href: `//0.0.0.0:1080/#/email/${item.id}`,
@@ -89,7 +89,7 @@ function Toolbar(el, data, onShow, onDelete) {
 
             win.document.body.innerHTML = item.html;
           },
-        }, [['small', `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
+        }, [['small', null, `${moment(new Date(item.time)).fromNow()} → ${item.envelope.to[0].address}`], item.subject]],
       ]])],
     ]],
     ['label', null, [
@@ -113,8 +113,8 @@ function Toolbar(el, data, onShow, onDelete) {
 
 function Value(item, Self, callback) {
   if (item.data) {
-    return ['div.nested', [
-      ['label', [
+    return ['div.nested', null, [
+      ['label', null, [
         'Enabled',
         ['input', { type: 'checkbox', onchange: e => callback(item, e.target.checked) }],
       ]],
@@ -123,7 +123,7 @@ function Value(item, Self, callback) {
   }
 
   if (typeof item.bool !== 'undefined') {
-    return ['div.flex', [
+    return ['div.flex', null, [
       ['input', {
         type: 'checkbox',
         onchange(e) {
@@ -133,7 +133,7 @@ function Value(item, Self, callback) {
     ]];
   }
 
-  return ['div.flex', [
+  return ['div.flex', null, [
     ['textarea', {
       rows: 1,
       oncreate(e) {
@@ -181,10 +181,10 @@ function List(el, Self, result, callback) {
     items: [getValue(0)],
   };
 
-  const $view = ({ items }, actions) => ['div', [
-    ['ul', items.map(item => ['li', [
+  const $view = ({ items }, actions) => ['div', null, [
+    ['ul', null, items.map(item => ['li', null, [
       Self(item.data),
-      item.key > 0 && ['button', { onclick: () => rmValue(item, actions) }, 'Remove'],
+      item.key > 0 ? ['button', { onclick: () => rmValue(item, actions) }, 'Remove'] : null,
     ]])],
     ['button', { onclick: () => actions.append(getValue(items.length)) }, 'Append'],
   ]];
@@ -219,16 +219,16 @@ function Params(el, onValue, onUpdate) {
       }];
     }
 
-    return ['ul', items.map(item => ['li', [
-      ['details', [
-        ['summary', item.key],
+    return ['ul', null, items.map(item => ['li', null, [
+      ['details', null, [
+        ['summary', null, item.key],
         Value(item, Data, onValue),
       ]],
     ]])];
   }
 
-  const $view = state => ['div', [
-    !state.items.length && ['p', 'No variables found'],
+  const $view = state => ['div', null, [
+    !state.items.length ? ['p', null, 'No variables found'] : null,
     Data(state.items),
   ]];
 
@@ -414,7 +414,7 @@ async function main() {
       ['a', { href: '#', onclick: showData }, 'Input'],
     ]],
     ['li.group', null, [
-      ['select', { onchange: setMode, oncreate: setRef('resize') }, modes.map(x => ['option', `${x}px`])],
+      ['select', { onchange: setMode, oncreate: setRef('resize') }, modes.map(x => ['option', null, `${x}px`])],
     ]],
   ]];
 
