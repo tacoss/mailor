@@ -56,24 +56,21 @@ module.exports = async (templates, opts) => {
       const src = relative(opts.cwd, file);
 
       /* istanbul ignore else */
-      if (existsSync(file) && type !== 'addDir') {
+      if (existsSync(file) && type !== 'addDir' && (!watching.some(dir => src.indexOf(dir) === 0))) {
         /* istanbul ignore else */
-        if (type === 'add' && src.includes('.pug') && !templates.includes(src)) {
-          templates.push(src);
+        if (type === 'add' && src.includes('.pug') && !templates.includes(file)) {
+          templates.push(file);
         }
 
         /* istanbul ignore else */
-        if (
-          ((!files.includes(src) && type === 'add') || type === 'change')
-          && (!watching.some(dir => src.indexOf(dir) === 0))
-        ) {
+        if ((!files.includes(src) && type === 'add') || type === 'change') {
           /* istanbul ignore else */
           if (type === 'add') process.stdout.write(`Added ${src}\n`);
           files.push(src);
           update();
         }
-      } else if (templates.includes(src)) {
-        templates = templates.filter(x => x !== src);
+      } else if (templates.includes(file)) {
+        templates = templates.filter(x => x !== file);
         process.stdout.write(`Removed ${src}\n`);
       }
     });
