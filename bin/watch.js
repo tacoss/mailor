@@ -1,7 +1,8 @@
 const glob = require('glob');
+const chokidar = require('chokidar');
 
 const {
-  readdirSync, readFileSync, statSync, existsSync,
+  readdirSync, readFileSync, existsSync,
 } = require('fs');
 
 const {
@@ -43,53 +44,35 @@ module.exports = async (templates, opts) => {
 
   process.stdout.write(`\rWatching: ${sources.map(x => relative(opts.cwd, x)).join(', ')}\n`);
 
-  let nsfw;
-  try {
-    nsfw = require('nsfw');
-  } catch (e) {
-    // do nothing
-  }
+  const watcher = chokidar.watch(sources, {
+    ignored: /(^|[/\\])\../,
+    ignoreInitial: false,
+    persistent: true,
+  });
 
-  const watchers = await Promise.all(sources.map(baseDir => {
-    return nsfw && nsfw(baseDir, evts => {
-      evts.forEach(evt => {
-        const filename = evt.newFile || evt.file;
-        const fullpath = join(evt.newDirectory || evt.directory, filename);
+  watcher
+    .on('all', (type, file) => {
+      const src = relative(opts.cwd, file);
 
-        const file = relative(opts.cwd, fullpath);
+      /* istanbul ignore else */
+      if (existsSync(file) && type !== 'addDir') {
+        /* istanbul ignore else */
+        if (type === 'add' && src.includes('.pug') && !templates.includes(src)) {
+          templates.push(src);
+        }
 
         /* istanbul ignore else */
-        if (existsSync(fullpath) && statSync(fullpath).isFile()) {
-          let type = (evt.action === 1 || evt.action === 2)
-            ? 'changed'
-            : null;
-
-          type = type || (evt.action === 0 ? 'add' : null);
-          type = type || (evt.action === 3 ? 'unlink' : null);
-
+        if ((!files.includes(src) && type === 'add') || type === 'change') {
           /* istanbul ignore else */
-          if (type === 'add' && filename.includes('.pug') && !templates.includes(fullpath)) {
-            templates.push(fullpath);
-          }
-
-          /* istanbul ignore else */
-          if ((!files.includes(file) && type === 'add') || type === 'changed') {
-            /* istanbul ignore else */
-            if (type === 'add') process.stdout.write(`Added ${file}\n`);
-            files.push(fullpath);
-            update();
-          }
-        } else if (templates.includes(fullpath)) {
-          templates = templates.filter(x => x !== fullpath);
-          process.stdout.write(`Removed ${file}\n`);
+          if (type === 'add') process.stdout.write(`Added ${src}\n`);
+          files.push(src);
+          update();
         }
-      });
-    }).then(watcher => {
-      /* istanbul ignore else */if (watcher) watcher.start();
-
-      return watcher;
+      } else if (templates.includes(src)) {
+        templates = templates.filter(x => x !== src);
+        process.stdout.write(`Removed ${src}\n`);
+      }
     });
-  }));
 
   const liveServer = require('live-server');
 
@@ -231,11 +214,6 @@ module.exports = async (templates, opts) => {
   }
 
   process.on('exit', () => {
-    watchers.forEach(watcher => {
-      /* istanbul ignore else */
-      if (watcher) watcher.stop();
-    });
-
     liveServer.shutdown();
 
     /* istanbul ignore else */

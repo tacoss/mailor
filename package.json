@@ -89,6 +89,6 @@
     "xmlhttprequest-ssl": ">=1.6.2"
   },
   "optionalDependencies": {
-    "nsfw": "^2.0.0"
+    "chokidar": "^3.5.1"
   }
 }
