@@ -45,6 +45,7 @@ const options = {
   open: argv.flags.open,
   build: argv.flags.build,
   watch: argv.flags.watch,
+  inline: argv.flags.inline,
   server: argv.flags.server,
   engine: argv.flags.engine,
   timeout: argv.flags.timeout,
@@ -83,6 +84,7 @@ Options:
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
   -w, --watch      # Additional directories to watch for changes
+  -i, --inline     # Inline stylesheets before sending mails
   -c, --config     # Configuration file for relay-options
   -e, --engine     # Use handlebars or liquidjs, default is mustache
   -t, --timeout    # Destination for generated templates

@@ -1,9 +1,12 @@
+const tmp = require('tempy');
+const juice = require('juice');
 const { join } = require('path');
+const { outputFileSync, readFileSync } = require('fs-extra');
 
 const Mailer = require('../lib/mailer');
 
 module.exports = (templates, {
-  filename, subject, address, locals,
+  filename, subject, address, locals, inline,
 }) => {
   if (!templates.length) {
     throw new Error('Missing templates to send');
@@ -18,11 +21,20 @@ module.exports = (templates, {
   });
 
   return Promise.all(templates.map(x => {
+    let file;
     if (filename && typeof filename === 'string') {
-      return join(x, `${filename}.html`);
+      file = join(x, `${filename}.html`);
+    } else {
+      file = x;
     }
 
-    return x;
+    if (inline) {
+      const html = readFileSync(file).toString();
+
+      outputFileSync(file = tmp.file(), juice(html));
+    }
+
+    return file;
   }).map(tpl => mailer.sendMail({
     template: tpl,
     data: locals,

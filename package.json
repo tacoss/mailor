@@ -57,6 +57,7 @@
     "fs-extra": "^10.0.0",
     "glob": "^7.1.6",
     "handlebars": "^4.7.6",
+    "juice": "^8.0.0",
     "less": "^4.1.1",
     "less-plugin-autoprefix": "^2.0.0",
     "liquidjs": "^9.15.1",
@@ -66,6 +67,7 @@
     "mustache": "^4.0.1",
     "nodemailer": "^6.0.0",
     "pug": "^3.0.0",
+    "tempy": "^1.0.1",
     "wargs": "^0.9.2"
   },
   "devDependencies": {
@@ -84,10 +86,9 @@
     "socket.io": ">=2.4.0",
     "somedom": "^0.3.2",
     "std-mocks": "^1.0.1",
-    "tempfile": "^3.0.0",
     "testdouble": "^3.12.4",
-    "xmlhttprequest-ssl": ">=1.6.2",
-    "ws": ">=7.4.6"
+    "ws": ">=7.4.6",
+    "xmlhttprequest-ssl": ">=1.6.2"
   },
   "optionalDependencies": {
     "chokidar": "^3.5.1"
