@@ -3,7 +3,7 @@ process.env.CI = 'false';
 const { expect } = require('chai');
 const fs = require('fs-extra');
 const path = require('path');
-const tempfile = require('tempfile');
+const tmp = require('tempy');
 const td = require('testdouble');
 const stdMocks = require('std-mocks');
 const stdinMock = require('mock-stdin');
@@ -269,7 +269,8 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(stdout[0]).to.contains('Error: Parsing failed');
+          expect(stdout[0]).to.contains('# undefined');
+          expect(stdout[1]).to.contains('Missing mjml/mj-body tags');
         }, 500);
       });
     });
@@ -278,10 +279,10 @@ describe('integration', () => {
       stdMocks.use();
 
       const input = stdinMock.stdin();
-      const tmp = tempfile();
+      const file = tmp.file();
 
       process.argv[2] = path.join(__dirname, 'fixtures/template.html');
-      process.argv[3] = tmp;
+      process.argv[3] = file;
 
       require('../lib/worker')();
       input.send(`
@@ -307,7 +308,7 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(fs.readFileSync(tmp).toString()).to.contains('!doctype html');
+          expect(fs.readFileSync(file).toString()).to.contains('!doctype html');
           expect(stdout).to.eql([]);
         }, 500);
       });
