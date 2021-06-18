@@ -1,11 +1,12 @@
 const argv = require('wargs')(process.argv.slice(2), {
   boolean: ['V', 'o', 'O', 'B', 'S', 'T', 'relay-secure'],
-  string: ['e', 'w', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
+  string: ['e', 'w', 'c', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],
   alias: {
     p: 'port',
     o: 'open',
     d: 'dest',
     w: 'watch',
+    c: 'config',
     e: 'engine',
     V: 'verbose',
     t: 'timeout',
@@ -63,6 +64,10 @@ const options = {
   destDir: resolve(argv.flags.dest || './generated'),
 };
 
+if (existsSync(argv.flags.config)) {
+  Object.assign(options.relayOptions, require(resolve(argv.flags.config)));
+}
+
 const thisPkg = require('../package.json');
 
 const thisBin = Object.keys(thisPkg.bin)[0];
@@ -78,6 +83,7 @@ Options:
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
   -w, --watch      # Additional directories to watch for changes
+  -c, --config     # Configuration file for relay-options
   -e, --engine     # Use handlebars or liquidjs, default is mustache
   -t, --timeout    # Destination for generated templates
   -s, --subject    # Subject for the message sent
