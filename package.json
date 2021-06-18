@@ -86,7 +86,8 @@
     "std-mocks": "^1.0.1",
     "tempfile": "^3.0.0",
     "testdouble": "^3.12.4",
-    "xmlhttprequest-ssl": ">=1.6.2"
+    "xmlhttprequest-ssl": ">=1.6.2",
+    "ws": ">=7.4.6"
   },
   "optionalDependencies": {
     "chokidar": "^3.5.1"
