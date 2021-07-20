@@ -123,6 +123,10 @@ const mailer = require('mailor').getMailer({
 });
 
 mailer.sendMail({
+  attachments: [{
+    filename: `receipt-${receipt.id}.xml`,
+    content: receipt.data,
+  }],
   template: 'path/to/tpl.html',
   subject: 'Test',
   email: 'test@example.com',
