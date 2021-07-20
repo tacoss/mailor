@@ -48,6 +48,25 @@ $ mailor send generated/test1.html
 
 Open http://localhost:1081 and see how it looks!
 
+### Templating support
+
+By default, e-mail templates are built using .pug files.
+
+However, you can use Mustache, Handlebars or Liquid templates for further rendering, e.g.
+
+```pug
+mjml
+  Body: Section
+    Column: Text
+      h1 Hello, {{firstName}}!
+```
+
+The example above generates the required HTML for the MJML post-processing, this lefts the `{{...}}` mustaches without changes.
+
+Now, when you call `sendMail(...)` you can pass `{ data: { firstName: 'John' } }` and the mustache will be rendered as expected.
+
+> Change the post-renderer with `Mustache.setEngine('mustache' | 'handlebars' | 'liquidjs')` in your code.
+
 ### LESS.js support
 
 You can pre-process and embed the resulting stylesheet through LESS, e.g.
