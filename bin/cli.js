@@ -5,6 +5,7 @@ const argv = require('wargs')(process.argv.slice(2), {
     p: 'port',
     o: 'open',
     d: 'dest',
+    y: 'types',
     w: 'watch',
     c: 'config',
     e: 'engine',
@@ -45,6 +46,7 @@ const options = {
   open: argv.flags.open,
   build: argv.flags.build,
   watch: argv.flags.watch,
+  types: argv.flags.types,
   inline: argv.flags.inline,
   server: argv.flags.server,
   engine: argv.flags.engine,
@@ -83,6 +85,7 @@ Options:
   -p, --port       # Custom port for preview page
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
+  -y, --types      # Write out .d.ts declaration from template names
   -w, --watch      # Additional directories to watch for changes
   -i, --inline     # Inline stylesheets before sending mails
   -c, --config     # Configuration file for relay-options

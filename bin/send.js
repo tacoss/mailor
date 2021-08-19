@@ -1,9 +1,11 @@
-const tmp = require('tempy');
+const os = require('os');
 const juice = require('juice');
 const { join } = require('path');
 const { outputFileSync, readFileSync } = require('fs-extra');
 
 const Mailer = require('../lib/mailer');
+
+const TEMP_DIR = os.tmpdir();
 
 module.exports = (templates, {
   filename, subject, address, locals, inline,
@@ -31,7 +33,8 @@ module.exports = (templates, {
     if (inline) {
       const html = readFileSync(file).toString();
 
-      outputFileSync(file = tmp.file(), juice(html));
+      file = join(TEMP_DIR, Math.random().toString(36));
+      outputFileSync(file, juice(html));
     }
 
     return file;

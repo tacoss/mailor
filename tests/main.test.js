@@ -3,11 +3,13 @@ process.env.CI = 'false';
 const { expect } = require('chai');
 const fs = require('fs-extra');
 const path = require('path');
-const tmp = require('tempy');
+const os = require('os');
 const td = require('testdouble');
 const stdMocks = require('std-mocks');
 const stdinMock = require('mock-stdin');
 const { fetchTags } = require('../bin/util');
+
+const TEMP_DIR = os.tmpdir();
 
 /* global beforeEach, afterEach, describe, it */
 
@@ -279,7 +281,7 @@ describe('integration', () => {
       stdMocks.use();
 
       const input = stdinMock.stdin();
-      const file = tmp.file();
+      const file = path.join(TEMP_DIR, Math.random().toString(36));
 
       process.argv[2] = path.join(__dirname, 'fixtures/template.html');
       process.argv[3] = file;
