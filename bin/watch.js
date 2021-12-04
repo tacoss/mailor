@@ -182,14 +182,14 @@ module.exports = async (templates, opts) => {
 
       /* istanbul ignore else */
       if (req.url === '/defaults.json') {
-        const srcFile = resolve(opts.jsonfile);
+        const srcFile = resolve(opts.jsonfile || 'defaults.json');
 
         delete require.cache[srcFile];
 
         res.setHeader('content-type', 'application/json');
 
         /* istanbul ignore else */
-        if (!existsSync(opts.jsonfile)) {
+        if (!existsSync(srcFile)) {
           res.end('{}');
           return;
         }
