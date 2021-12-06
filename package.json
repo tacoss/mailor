@@ -66,7 +66,6 @@
     "maildev": "^1.1.0",
     "mjml": "^4.9.3",
     "mustache": "^4.0.1",
-    "nodemailer": "^6.0.0",
     "pug": "^3.0.0",
     "wargs": "^0.9.2"
   },
@@ -82,6 +81,7 @@
     "minimist": ">=1.2.3",
     "mocha": "^8.4.0",
     "mock-stdin": "^1.0.0",
+    "nodemailer": "^6.7.2",
     "nth-check": ">=2.0.1",
     "nyc": "^15.1.0",
     "open": ">=6.0.0",
@@ -91,6 +91,9 @@
     "testdouble": "^3.12.4",
     "ws": ">=7.4.6",
     "xmlhttprequest-ssl": ">=1.6.2"
+  },
+  "peerDependencies": {
+    "nodemailer": "^6.0.0"
   },
   "optionalDependencies": {
     "chokidar": "^3.5.1"
