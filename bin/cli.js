@@ -82,6 +82,7 @@ Usage:
   ${thisBin} init
 
 Options:
+  -x, --ext        # Custom filename extension
   -p, --port       # Custom port for preview page
   -o, --open       # Often open or --no-open (-O) the browser
   -d, --dest       # Output destination for generated files
@@ -125,7 +126,7 @@ function init() {
 }
 
 async function main() {
-  const opts = { ...options, locals: argv.data };
+  const opts = { ...options, locals: argv.data, extname: argv.flags.ext || 'html' };
 
   if (opts.engine) {
     require('../lib/mailer').setEngine(opts.engine);
