@@ -15,8 +15,6 @@ const title = document.title;
 const mainEl = document.querySelector('#preview');
 const toggleEl = document.querySelector('#toggle');
 
-// FIXME: rework into thunks/components?
-
 function setRef(name) {
   return e => {
     refs[name] = e;
@@ -27,21 +25,19 @@ function getRef(name) {
   return refs[name];
 }
 
-function getInput(args) {
-  let defaults = [];
-
+function getData(args) {
+  let obj = null;
   if (args && args.input) {
-    defaults = args.input.reduce((prev, cur) => {
-      if (!cur.input.length) {
-        prev.push({ key: cur.key, bool: cur.falsy });
+    args.input.forEach(prop => {
+      if (obj === null) obj = {};
+      if (prop.repeat) {
+        obj[prop.key] = prop.input.map(x => getData({ input: x }));
       } else {
-        prev.push({ key: cur.key, data: cur.input, list: cur.repeat });
+        obj[prop.key] = getData(prop);
       }
-      return prev;
-    }, []);
+    });
   }
-
-  return defaults;
+  return obj;
 }
 
 function untoggle(e, node) {
@@ -58,12 +54,6 @@ function untoggle(e, node) {
 
 function titleCase(text) {
   return text[0].toUpperCase() + text.substr(1).replace(/-([a-z])/g, (_, k) => ` ${k.toUpperCase()}`);
-}
-
-function clone(obj) {
-  if (!obj || typeof obj !== 'object') return obj;
-  if (Array.isArray(obj)) return obj.map(x => clone(x));
-  return Object.keys(obj).reduce((memo, key) => Object.assign(memo, { [key]: clone(obj[key]) }), {});
 }
 
 function Toolbar(el, data, onShow, onDelete) {
@@ -111,125 +101,19 @@ function Toolbar(el, data, onShow, onDelete) {
   return view($view, $state, $actions)(el, $);
 }
 
-function Value(item, Self, callback) {
-  if (item.data) {
-    return ['div.nested', null, [
-      ['label', null, [
-        'Enabled',
-        ['input', { type: 'checkbox', onchange: e => callback(item, e.target.checked) }],
-      ]],
-      Self(item.data, item.list),
-    ]];
-  }
-
-  if (typeof item.bool !== 'undefined') {
-    return ['div.flex', null, [
-      ['input', {
-        type: 'checkbox',
-        onchange(e) {
-          callback(item, e.target.checked);
-        },
-      }],
-    ]];
-  }
-
-  return ['div.flex', null, [
-    ['textarea', {
-      rows: 1,
-      oncreate(e) {
-        item.ref = e;
-      },
-      onchange(e) {
-        callback(item, e.target.value);
-      },
-    }],
-    ['button', {
-      onclick() {
-        item.ref.value = '';
-        callback(item, '');
-      },
-    }, '×'],
-  ]];
-}
-
-function List(el, Self, result, callback) {
-  function getValue(offset) {
-    return {
-      list: true,
-      key: offset,
-      data: clone(result)[0],
-    };
-  }
-
-  function rmValue(item, actions) {
-    actions.remove(item.key);
-  }
-
+function Edit(el, onValue) {
   const $actions = {
-    update: value => () => ({
-      items: value,
-    }),
-    append: value => ({ items }) => ({
-      items: items.concat(value),
-    }),
-    remove: value => ({ items }) => ({
-      items: items.filter(x => x.key !== value),
-    }),
+    update: value => () => value,
   };
 
-  const $state = {
-    items: [getValue(0)],
-  };
-
-  const $view = ({ items }, actions) => ['div', null, [
-    ['ul', null, items.map(item => ['li', null, [
-      Self(item.data),
-      item.key > 0 ? ['button', { onclick: () => rmValue(item, actions) }, 'Remove'] : null,
-    ]])],
-    ['button', { onclick: () => actions.append(getValue(items.length)) }, 'Append'],
-  ]];
-
-  const View = view($view, $state, $actions);
-  const $$ = View(el, $);
-
-  $$.subscribe(callback);
-
-  return $$;
-}
-
-function Params(el, onValue, onUpdate) {
-  const $actions = {
-    update: value => () => ({
-      items: value,
-    }),
-  };
-
-  const $state = {
-    items: [],
-  };
-
-  function Data(items, repeated) {
-    if (repeated) {
-      return ['fieldset', {
-        oncreate: _el => new List(_el, Data, items, result => {
-          result.items.forEach(item => { items[item.key] = item.data; });
-          items.length = result.items.length;
-          onUpdate();
-        }),
-      }];
-    }
-
-    return ['ul', null, items.map(item => ['li', null, [
-      ['details', null, [
-        ['summary', null, item.key],
-        Value(item, Data, onValue),
-      ]],
-    ]])];
-  }
+  const $state = {};
 
   const $view = state => ['div', null, [
-    !state.items.length ? ['p', null, 'No variables found'] : null,
-    Data(state.items),
+    ['textarea', {
+      oninput(e) {
+        onValue.call(e.target, e.target.value);
+      },
+    }, JSON.stringify(state, null, 2)],
   ]];
 
   return view($view, $state, $actions)(el, $);
@@ -284,25 +168,19 @@ async function main() {
     return location.hash.split('#')[1];
   }
 
-  function getLocals(source, _target) {
-    if (Array.isArray(source[0])) {
-      return source.map(x => getLocals(x));
-    }
+  function getLocals(source, defaults = {}) {
+    if (Array.isArray(source)) return source.map(getLocals);
+    if (!source || typeof source !== 'object') return source;
 
-    return source.reduce((prev, cur) => {
-      if (cur.list || cur.data) {
-        if (cur.value) prev[cur.key] = getLocals(cur.data);
-      } else if (typeof cur.bool !== 'undefined') {
-        prev[cur.key] = cur.value;
-      } else if (cur.value !== false) {
-        prev[cur.key] = cur.value || defs[cur.key] || `[${cur.key.toUpperCase()}]`;
-      }
-      return prev;
-    }, _target || {});
+    const copy = {};
+    Object.keys(source).forEach(key => {
+      copy[key] = source[key] === null ? defaults[key] || `[${key}]` : getLocals(source[key], defaults[key] || {});
+    });
+    return copy;
   }
 
   function getQueryParams() {
-    return encodeURIComponent(JSON.stringify(getLocals(curVars)));
+    return encodeURIComponent(JSON.stringify(getLocals(curVars, defs)));
   }
 
   function renderDocument() {
@@ -311,7 +189,7 @@ async function main() {
     };
 
     if (data.indexOf(getId()) === -1) {
-      location.hash = Object.keys(vars)[0];
+      location.hash = data[0];
     } else {
       mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
 
@@ -319,19 +197,27 @@ async function main() {
     }
   }
 
-  function setValue(item, value) {
-    item.value = value;
-    renderDocument();
+  let timeout;
+  function setValue(value) {
+    try {
+      const payload = JSON.parse(value);
+      curVars = payload;
+      clearTimeout(timeout);
+      timeout = setTimeout(renderDocument, 120);
+      this.classList.remove('invalid');
+    } catch (e) {
+      this.classList.add('invalid');
+    }
   }
 
-  const paramsEl = new Params('#input', setValue, renderDocument);
+  const paramsEl = new Edit('#input', setValue);
 
   function syncVars(key) {
-    paramsEl.update(curVars = getInput(vars[key]));
+    paramsEl.update(curVars = getData(vars[key]));
   }
 
   if (Object.keys(vars).length) {
-    const key = location.hash.split('#')[1] || Object.keys(vars)[0];
+    const key = location.hash.split('#')[1] || data[0];
 
     if (!location.hash) {
       location.hash = key;
@@ -393,7 +279,7 @@ async function main() {
     counter.update(allRecipients);
     getRef('email').disabled = !getRef('email').validity.valid;
   }
-  setInterval(sync, 60000);
+  setInterval(sync, 10000);
   sync();
 
   function sendMail() {

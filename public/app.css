@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -17,6 +23,21 @@ body {
 
 textarea {
   border: 0;
+  min-height: 66vh;
+  min-width: 380px;
+  max-width: 90vw;
+  max-height: 72vh;
+}
+textarea:focus {
+  outline: 0;
+}
+textarea.invalid {
+  color: #b34045;
+}
+@media screen and (min-width: 760px) {
+  textarea {
+    max-width: 760px;
+  }
 }
 fieldset {
   border: none;
@@ -243,13 +264,12 @@ ul {
   border: 1px solid silver;
   background-color: white;
   color: gray;
-  padding: 2px;
+  padding: 2px 5px;
   font-size: .75em;
   text-align: center;
   border-radius: 15px;
   opacity: 1;
   min-width: 1em;
-  height: 1em;
   left: -1em;
   top: -5px;
 }
@@ -275,6 +295,8 @@ a {
   position: absolute;
   border-left: 1px solid silver;
 }
+
+#input > div { width: 100%; }
 
 textarea + button:hover {
   cursor: pointer;
