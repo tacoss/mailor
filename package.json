@@ -1,7 +1,7 @@
 {
   "name": "mailor",
   "version": "0.3.14",
-  "description": "Mailer tools",
+  "description": "Low-cost mailing authoring",
   "main": "lib/mailer.js",
   "bin": {
     "mailor": "bin/cli"
