@@ -63,10 +63,10 @@ module.exports = async (templates, opts) => {
         }
 
         /* istanbul ignore else */
-        if ((!files.includes(src) && type === 'add') || type === 'change') {
+        if ((!files.includes(file) && type === 'add') || type === 'change') {
           /* istanbul ignore else */
           if (type === 'add') process.stdout.write(`Added ${src}\n`);
-          files.push(src);
+          files.push(file);
           update();
         }
       } else if (templates.includes(file)) {
