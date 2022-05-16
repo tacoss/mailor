@@ -67,7 +67,7 @@
     "mjml": "^4.9.3",
     "mustache": "^4.0.1",
     "pug": "^3.0.0",
-    "wargs": "^0.9.2"
+    "wargs": "^0.9.6"
   },
   "devDependencies": {
     "ansi-regex": ">=5.0.1",
