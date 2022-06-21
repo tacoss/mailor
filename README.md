@@ -127,6 +127,12 @@ mailer.sendMail({
     filename: `receipt-${receipt.id}.xml`,
     content: receipt.data,
   }],
+  headers: {
+    'x-mailgun-variables': JSON.stringify({ t: 42 }),
+  },
+  callback(options) {
+    options.headers['x-mailgun-tag'] = 'test';
+  },
   template: 'path/to/tpl.html',
   subject: 'Test',
   email: 'test@example.com',
