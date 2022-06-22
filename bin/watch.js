@@ -109,7 +109,7 @@ module.exports = async (templates, opts) => {
           // ignore
         }
 
-        Mailer.render(join(opts.destDir, base), data)
+        Mailer.render(join(opts.destDir, `${base}.${opts.extname}`), data)
           .catch(e => e.message)
           .then(x => res.end(x));
         return;
@@ -165,7 +165,7 @@ module.exports = async (templates, opts) => {
         res.end(JSON.stringify(readdirSync(opts.destDir).reduce((prev, cur) => {
           const fileContent = readFileSync(join(opts.destDir, cur)).toString();
 
-          prev[cur.replace('.html', '')] = fetchTags(fileContent);
+          prev[cur.replace(`.${opts.extname}`, '')] = fetchTags(fileContent);
           return prev;
         }, {})));
         return;

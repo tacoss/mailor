@@ -146,7 +146,7 @@ async function main() {
         break;
 
       case 'send':
-        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes('.html')), opts);
+        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes(`.${opts.extname}`)), opts);
         break;
 
       case 'help':

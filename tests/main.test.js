@@ -77,7 +77,7 @@ describe('Mailor', () => {
       const mailer = new Mailor({ transport: { sendMail } });
       const result = await mailer._sendMail({ test: true });
 
-      expect(result).to.eql({ test: true });
+      expect(result).to.eql({ test: true, headers: {} });
     });
   });
 
@@ -146,6 +146,7 @@ describe('Mailor', () => {
       expect(result).to.eql({
         to: 'admin@email.com',
         html: 'It works! - Value: bar\n',
+        headers: {},
         subject,
       });
     });

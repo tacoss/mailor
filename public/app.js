@@ -191,7 +191,7 @@ async function main() {
     if (data.indexOf(getId()) === -1) {
       location.hash = data[0];
     } else {
-      mainEl.src = `/generated_templates/${getId()}.html?${getQueryParams()}`;
+      mainEl.src = `/generated_templates/${getId()}?${getQueryParams()}`;
 
       resize();
     }
@@ -284,7 +284,7 @@ async function main() {
 
   function sendMail() {
     getRef('email').disabled = true;
-    post(`/send_template/${getId()}.html?${target},${getQueryParams()}`)
+    post(`/send_template/${getId()}?${target},${getQueryParams()}`)
       .then(debugMessage)
       .then(sync);
   }

@@ -8,7 +8,7 @@ const Mailer = require('../lib/mailer');
 const TEMP_DIR = os.tmpdir();
 
 module.exports = (templates, {
-  filename, subject, address, locals, inline,
+  filename, extname, subject, address, locals, inline,
 }) => {
   if (!templates.length) {
     throw new Error('Missing templates to send');
@@ -25,7 +25,7 @@ module.exports = (templates, {
   return Promise.all(templates.map(x => {
     let file;
     if (filename && typeof filename === 'string') {
-      file = join(x, `${filename}.html`);
+      file = join(x, `${filename}.${extname}`);
     } else {
       file = x;
     }
