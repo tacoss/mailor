@@ -128,7 +128,7 @@ module.exports = async (templates, opts) => {
           // ignore
         }
 
-        require('./send')([join(opts.destDir, base)], {
+        require('./send')([join(opts.destDir, `${base}.${opts.extname}`)], {
           subject: `[TEST] ${base}`,
           address: parts.join(','),
           locals: data,
