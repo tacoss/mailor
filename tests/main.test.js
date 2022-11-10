@@ -236,7 +236,7 @@ describe('integration', () => {
 
           const { stdout } = stdMocks.flush();
 
-          expect(stdout).to.eql([
+          expect(stdout.slice(-2)).to.eql([
             'MailDev webapp running at http://0.0.0.0:1080\n',
             'MailDev SMTP Server running at 0.0.0.0:1025\n',
           ]);
