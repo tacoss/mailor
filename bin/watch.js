@@ -101,15 +101,14 @@ module.exports = async (templates, opts) => {
       if (req.url.indexOf('/generated_templates/') === 0) {
         const [base, query] = req.url.substr(21).split('?');
 
-        let data = {};
-
+        let data;
         try {
           data = JSON.parse(decodeURIComponent(query));
         } catch (e) {
           // ignore
         }
 
-        Mailer.render(join(opts.destDir, `${base}.${opts.extname}`), data)
+        Mailer.render(join(opts.destDir, `${base}.${opts.extname}`), data || {})
           .catch(e => e.message)
           .then(x => res.end(x));
         return;
