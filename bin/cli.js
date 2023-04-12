@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const argv = require('wargs')(process.argv.slice(2), {
   boolean: ['V', 'o', 'O', 'B', 'S', 'T', 'relay-secure'],
   string: ['e', 'w', 'c', 'p', 'd', 't', 's', 'a', 'f', 'j', 'relay-to', 'relay-host', 'relay-user', 'relay-pass'],

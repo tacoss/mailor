@@ -4,7 +4,7 @@
   "description": "Low-cost mailing authoring",
   "main": "lib/mailer.js",
   "bin": {
-    "mailor": "bin/cli"
+    "mailor": "bin/cli.js"
   },
   "scripts": {
     "dist": "mkdir -p dist && cp node_modules/somedom/dist/somedom.umd.js dist/",
