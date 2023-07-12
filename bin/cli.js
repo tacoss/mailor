@@ -28,7 +28,6 @@ const {
   copySync,
   mkdirSync,
   existsSync,
-  ensureDirSync,
 } = require('fs-extra');
 
 const {
@@ -36,8 +35,6 @@ const {
   resolve,
   relative,
 } = require('path');
-
-const glob = require('glob');
 
 const _cwd = process.cwd();
 const action = argv._[0] || 'help';
@@ -129,12 +126,7 @@ function init() {
 
 async function main() {
   const opts = { ...options, locals: argv.data, extname: argv.flags.ext || 'html' };
-
-  if (opts.engine) {
-    require('../lib/mailer').setEngine(opts.engine);
-  }
-
-  ensureDirSync(opts.destDir);
+  const api = require('./main').configure(opts);
 
   try {
     switch (action) {
@@ -144,11 +136,11 @@ async function main() {
           process.stdout.write(`\r\x1b[KLoading ${opts.engine || 'mustache'} templates...\r`);
         });
 
-        await require(`./${action}`)(options.srcDir.reduce((prev, cur) => prev.concat(glob.sync(`${cur}/*.pug`)), []), opts);
+        await api[action]();
         break;
 
       case 'send':
-        await require(`./${action}`)(options.srcDir.filter(x => existsSync(x) || x.includes(`.${opts.extname}`)), opts);
+        await api[action]();
         break;
 
       case 'help':
