@@ -25,6 +25,9 @@
     "codecov": "codecov --file=coverage/lcov.info -e TRAVIS_NODE_VERSION",
     "report": "nyc report"
   },
+  "engines": {
+    "node": "*"
+  },
   "files": [
     "bin/*",
     "lib/*.js",
